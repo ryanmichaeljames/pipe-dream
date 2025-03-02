@@ -33,7 +33,7 @@ jobs:
         $pattern = "## $tag([\s\S]*?)(?=##|$)"
         $regexMatches = [regex]::Matches($changelog, $pattern)
         if ($regexMatches.Count -gt 0) {
-            $releaseNotes = $regexMatches[0].Groups[1].Value.Trim() -replace '"', '""'
+            $releaseNotes = $regexMatches[0].Groups[1].Value.Trim()
         } else {
             $releaseNotes = "[CHANGELOG](https://github.com/ryanmichaeljames/pipe-dream/blob/$tag/CHANGELOG.md)"
         }
@@ -44,7 +44,8 @@ jobs:
       with:
         tag_name: ${{ github.event.inputs.tag }}
         body: ${{ steps.extract-release-notes.outputs.RELEASE_NOTES }}
-        files: dist\PipeDream_${{ github.event.inputs.tag }}.zip
+        files: |
+          dist\PipeDream_${{ github.event.inputs.tag }}.zip
 
     - name: Publish to Powerhell Gallery
       uses: natescherer/publish-powershell-action@v1
