@@ -21,7 +21,7 @@ jobs:
         New-Item -Path 'dist\PipeDream' -ItemType Directory -Force | Out-Null
         Copy-Item -Path 'src\PipeDream\*' -Destination 'dist\PipeDream' -Recurse
         Copy-Item -Path 'CHANGELOG.md', 'LICENSE.md', 'README.md' -Destination 'dist\PipeDream'
-        Compress-Archive -Path 'dist\PipeDream' -DestinationPath 'dist\PipeDream_${{ github.event.inputs.tag }}.zip'
+        Compress-Archive -Path 'dist\PipeDream' -DestinationPath 'PipeDream_${{ github.event.inputs.tag }}.zip'
         Get-ChildItem -Path 'dist' -Recurse
 
     - name: Extract Release Notes
@@ -44,7 +44,7 @@ jobs:
       with:
         tag_name: ${{ github.event.inputs.tag }}
         body: ${{ steps.extract-release-notes.outputs.RELEASE_NOTES }}
-        files: '*\PipeDream_${{ github.event.inputs.tag }}.zip'
+        files: PipeDream_${{ github.event.inputs.tag }}.zip
 
     - name: Publish to Powerhell Gallery
       uses: natescherer/publish-powershell-action@v1
