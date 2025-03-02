@@ -14,7 +14,7 @@
     PrivateData = @{
         PSData = @{
             Prerelease = 'alpha'
-            Tags = 'PowerShell', 'Power Platform', 'Dataverse'
+            Tags = 'PowerShell', 'PowerPlatform', 'Dataverse'
             LicenseUri = 'https://github.com/ryanmichaeljames/pipe-dream/blob/main/LICENSE.md'
             ProjectUri = 'https://github.com/ryanmichaeljames/pipe-dream'
             IconUri = 'https://www.ryanjames.dev/assets/img/pipe-dream-logo.png'
