@@ -10,7 +10,7 @@ function Get-DataverseAuthToken {
     The tenant ID of the Azure Active Directory.
 
     .PARAMETER EnvironmentUrl
-    The URL of the Dataverse environment (e.g., https://yourorg.crm.dynamics.com).
+    The URL of the Dataverse environment (e.g., https://your-org.crm.dynamics.com).
 
     .PARAMETER ClientId
     The client ID of the application.
@@ -19,7 +19,7 @@ function Get-DataverseAuthToken {
     The client secret of the application.
 
     .EXAMPLE
-    $token = Get-DataverseAuthToken -TenantId '00000000-0000-0000-0000-000000000000' -EnvironmentUrl 'https://yourorg.crm.dynamics.com' -ClientId '00000000-0000-0000-0000-000000000000' -ClientSecret 'your-client-secret'
+    $token = Get-DataverseAuthToken -TenantId '00000000-0000-0000-0000-000000000000' -EnvironmentUrl 'https://your-org.crm.dynamics.com' -ClientId '00000000-0000-0000-0000-000000000000' -ClientSecret 'your-client-secret'
     #>
 
     param (
