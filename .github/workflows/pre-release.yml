@@ -25,9 +25,9 @@ jobs:
         draft: true
         files: PipeDream_${{ github.ref_name }}.zip
 
-    # - name: Publish PowerShell Module
-    #   uses: natescherer/publish-powershell-action@v1
-    #   with:
-    #     token: ${{ secrets.PSGALLERY_API_KEY }}
-    #     target: gallery
-    #     path: src\PipeDream\PipeDream.psd1
+    - name: Publish PowerShell Module
+      uses: natescherer/publish-powershell-action@v1
+      with:
+        token: ${{ secrets.PSGALLERY_API_KEY }}
+        target: gallery
+        path: src\PipeDream\PipeDream.psd1
