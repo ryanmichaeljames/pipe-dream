@@ -24,7 +24,7 @@ jobs:
         Compress-Archive -Path 'dist\PipeDream' -DestinationPath 'dist\PipeDream_${{ github.event.inputs.tag }}.zip'
 
     - name: Extract Release Notes
-      id: extract_release_notes
+      id: extract-release-notes
       shell: pwsh
       run: |
         $changelog = Get-Content -Path "CHANGELOG.md" -Raw
@@ -36,13 +36,13 @@ jobs:
         } else {
             $releaseNotes = "[CHANGELOG](https://github.com/ryanmichaeljames/pipe-dream/blob/$tag/CHANGELOG.md)"
         }
-        echo "release_notes=$releaseNotes" >> $env:GITHUB_OUTPUT
+        echo "RELEASE_NOTES=$releaseNotes" >> "$GITHUB_OUTPUT"
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ github.event.inputs.tag }}
-        body: ${{ steps.extract_release_notes.outputs.release_notes }}
+        body: ${{ steps.extract-release-notes.outputs.RELEASE_NOTES }}
         files: dist\PipeDream_${{ github.event.inputs.tag }}.zip
 
     - name: Publish PowerShell Module
