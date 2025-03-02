@@ -36,7 +36,6 @@ jobs:
         } else {
             $releaseNotes = "[CHANGELOG](https://github.com/ryanmichaeljames/pipe-dream/blob/$tag/CHANGELOG.md)"
         }
-        $releaseNotes
         echo "release_notes=$releaseNotes" >> $env:GITHUB_OUTPUT
 
     - name: Create GitHub Release
