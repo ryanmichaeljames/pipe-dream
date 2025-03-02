@@ -18,10 +18,11 @@ jobs:
     - name: Package module
       shell: pwsh
       run: |
-        New-Item -Path 'dist\PipeDream' -ItemType Directory -Force
+        New-Item -Path 'dist\PipeDream' -ItemType Directory -Force | Out-Null
         Copy-Item -Path 'src\PipeDream\*' -Destination 'dist\PipeDream' -Recurse
         Copy-Item -Path 'CHANGELOG.md', 'LICENSE.md', 'README.md' -Destination 'dist\PipeDream'
         Compress-Archive -Path 'dist\PipeDream' -DestinationPath 'dist\PipeDream_${{ github.event.inputs.tag }}.zip'
+        Get-ChildItem -Path 'dist' -Recurse
 
     - name: Extract Release Notes
       id: extract-release-notes
@@ -45,7 +46,7 @@ jobs:
         body: ${{ steps.extract-release-notes.outputs.RELEASE_NOTES }}
         files: dist\PipeDream_${{ github.event.inputs.tag }}.zip
 
-    - name: Publish PowerShell Module
+    - name: Publish to Powerhell Gallery
       uses: natescherer/publish-powershell-action@v1
       with:
         token: ${{ secrets.PS_GALLERY_API_KEY }}
