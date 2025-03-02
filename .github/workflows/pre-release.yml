@@ -28,6 +28,6 @@ jobs:
     - name: Publish PowerShell Module
       uses: natescherer/publish-powershell-action@v1
       with:
-        token: ${{ secrets.PSGALLERY_API_KEY }}
+        token: ${{ secrets.PS_GALLERY_API_KEY }}
         target: gallery
         path: src\PipeDream\PipeDream.psd1
