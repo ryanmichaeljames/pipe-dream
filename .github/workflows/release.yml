@@ -1,0 +1,53 @@
+name: Release PipeDream Module
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Package module
+      shell: pwsh
+      run: |
+        New-Item -Path 'dist\PipeDream' -ItemType Directory -Force
+        Copy-Item -Path 'src\PipeDream\*' -Destination 'dist\PipeDream' -Recurse
+        Copy-Item -Path 'CHANGELOG.md', 'LICENSE.md', 'README.md' -Destination 'dist\PipeDream'
+        Compress-Archive -Path 'dist\PipeDream' -DestinationPath 'dist\PipeDream_${{ github.event.inputs.tag }}.zip'
+
+    - name: Extract Release Notes
+      id: extract_release_notes
+      shell: pwsh
+      run: |
+        $changelog = Get-Content -Path "CHANGELOG.md" -Raw
+        $tag = "${{ github.event.inputs.tag }}"
+        $pattern = "## $tag([\s\S]*?)(?=##|$)"
+        $regexMatches = [regex]::Matches($changelog, $pattern)
+        if ($regexMatches.Count -gt 0) {
+            $releaseNotes = $regexMatches[0].Groups[1].Value.Trim()
+        } else {
+            $releaseNotes = "[CHANGELOG](https://github.com/ryanmichaeljames/pipe-dream/blob/$tag/CHANGELOG.md)"
+        }
+        echo "::set-output name=release_notes::$releaseNotes"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.event.inputs.tag }}
+        body: ${{ steps.extract_release_notes.outputs.release_notes }}
+        files: dist\PipeDream_${{ github.event.inputs.tag }}.zip
+
+    - name: Publish PowerShell Module
+      uses: natescherer/publish-powershell-action@v1
+      with:
+        token: ${{ secrets.PS_GALLERY_API_KEY }}
+        target: gallery
+        path: dist\PipeDream\PipeDream.psd1
