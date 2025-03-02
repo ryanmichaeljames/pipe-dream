@@ -37,3 +37,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Ignore build artifacts
+/dist/
