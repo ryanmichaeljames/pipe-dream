@@ -17,7 +17,7 @@
             Tags = 'PowerShell', 'Power Platform', 'Dataverse'
             LicenseUri = 'https://github.com/ryanmichaeljames/pipe-dream/blob/main/LICENSE.md'
             ProjectUri = 'https://github.com/ryanmichaeljames/pipe-dream'
-            IconUri = 'https://example.com/icon.png'
+            IconUri = 'https://www.ryanjames.dev/assets/img/pipe-dream-logo.png'
         }
     }
 }
