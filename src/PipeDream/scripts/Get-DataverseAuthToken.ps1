@@ -108,3 +108,5 @@ function Get-DataverseAuthToken {
         }
     }
 }
+
+Export-ModuleMember -Function @('Get-DataverseAuthToken')
