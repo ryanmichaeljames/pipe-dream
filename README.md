@@ -1,10 +1,3 @@
-<a href="https://gitmoji.dev">
-  <img
-    src="https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square"
-    alt="Gitmoji"
-  />
-</a>
-
 # PipeDream
 
 PipeDream is a collection of PowerShell tools that make interaction with the Power Platform, Azure DevOps easier.
