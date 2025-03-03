@@ -20,44 +20,33 @@ function Get-DataverseAuthToken {
 
     .OUTPUTS
     PSCustomObject containing the following properties:
-    - AccessToken: The access token to use in API calls
-    - TokenType: The token type (typically "Bearer")
-    - ExpiresIn: Token lifespan in seconds
-    - ExpiresAt: DateTime when the token expires (in UTC)
-    - Resource: Resource the token is valid for
+    - access_token: The access token to use in API calls
+    - token_type: The token type (typically "Bearer")
+    - expires_in: Token lifespan in seconds
+    - expires_at: DateTime when the token expires (in UTC)
+    - resource: Resource the token is valid for
 
     .EXAMPLE
-    $token = Get-DataverseAuthToken -TenantId '00000000-0000-0000-0000-000000000000' -EnvironmentUrl 'https://your-org.crm.dynamics.com' -ClientId '00000000-0000-0000-0000-000000000000' -ClientSecret 'your-client-secret'
-
-    .EXAMPLE
-    # Get token and use it in a subsequent API call
-    $token = Get-DataverseAuthToken -TenantId '00000000-0000-0000-0000-000000000000' -EnvironmentUrl 'https://your-org.crm.dynamics.com' -ClientId '00000000-0000-0000-0000-000000000000' -ClientSecret 'your-client-secret'
-    
-    $headers = @{
-        "Authorization" = "$($token.TokenType) $($token.AccessToken)"
-        "Content-Type" = "application/json"
-    }
-    $apiUrl = "$($EnvironmentUrl)/api/data/v9.1/accounts"
-    Invoke-RestMethod -Method Get -Uri $apiUrl -Headers $headers
+    # Get an authentication token
+    Get-DataverseAuthToken `
+        -TenantId "00000000-0000-0000-0000-000000000000" `
+        -ResourceUrl "https://your-org.crm.dynamics.com" `
+        -ClientId "00000000-0000-0000-0000-000000000000" `
+        -ClientSecret "your-client-secret"
     #>
     [CmdletBinding()]
     [OutputType([PSCustomObject])]
     param (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [string]$TenantId,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^https?://')]
         [string]$EnvironmentUrl,
     
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [string]$ClientId,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [string]$ClientSecret
     )
 
@@ -91,26 +80,23 @@ function Get-DataverseAuthToken {
             # Calculate expiration time
             $expirationTime = (Get-Date).AddSeconds($response.expires_in).ToUniversalTime()
             $expirationTimeString = $expirationTime.ToString("yyyy-MM-ddTHH:mm:ssZ")
+            Write-Verbose "Token expires at: $expirationTimeString"
 
             # Create a custom token object with useful properties
             $token = [PSCustomObject]@{
-                AccessToken = $response.access_token
-                TokenType   = $response.token_type
-                ExpiresIn   = $response.expires_in
-                ExpiresAt   = $expirationTimeString
-                Resource    = $response.resource
+                access_token = $response.access_token
+                token_type   = $response.token_type
+                expires_in   = $response.expires_in
+                expires_at   = $expirationTimeString
+                resource     = $response.resource
             }
 
-            Write-Verbose "Token expires at: $expirationTimeString"
             return $token
         }
-        catch [System.Net.WebException] {
-            Write-Error "Failed to connect to authentication service. Please check your network connection and the environment URL."
-            throw "Authentication failed: $_"
-        }
         catch {
-            Write-Error "Authentication failed. Please verify your credentials and tenant information."
-            throw "Authentication error: $_"
+            throw
         }
     }
 }
+
+Export-ModuleMember -Function @('Get-DataverseAuthToken')
