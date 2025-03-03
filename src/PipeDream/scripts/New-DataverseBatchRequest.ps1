@@ -45,19 +45,15 @@ function New-DataverseBatchRequest {
     [OutputType([System.Collections.Hashtable])]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet("GET", "POST", "PATCH", "DELETE", "PUT")]
         [string]$Method,
 
         [Parameter(Mandatory = $true, Position = 1)]
-        [ValidateNotNullOrEmpty()]
         [string]$Path,
 
         [Parameter(Mandatory = $false)]
         [object]$Body,
 
         [Parameter(Mandatory = $false)]
-        [ValidatePattern('^[a-zA-Z0-9_\-]+$')]
         [string]$ContentId,
 
         [Parameter(Mandatory = $false)]
@@ -66,11 +62,6 @@ function New-DataverseBatchRequest {
 
     begin {
         Write-Verbose "Creating Dataverse batch request with method: $Method, path: $Path"
-
-        # Validate body is present for methods that require it
-        if ($Method -in @('POST', 'PATCH', 'PUT') -and $null -eq $Body) {
-            Write-Warning "Body parameter is typically required for $Method operations. Creating request without body."
-        }
     }
 
     process {
@@ -107,8 +98,7 @@ function New-DataverseBatchRequest {
             return $request
         }
         catch {
-            Write-Error "Failed to create batch request object: $_"
-            throw "Error creating Dataverse batch request: $_"
+            throw
         }
     }
 

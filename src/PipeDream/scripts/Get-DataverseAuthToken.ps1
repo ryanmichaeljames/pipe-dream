@@ -38,20 +38,15 @@ function Get-DataverseAuthToken {
     [OutputType([PSCustomObject])]
     param (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [string]$TenantId,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^https?://')]
         [string]$EnvironmentUrl,
     
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [string]$ClientId,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [string]$ClientSecret
     )
 
@@ -98,13 +93,8 @@ function Get-DataverseAuthToken {
 
             return $token
         }
-        catch [System.Net.WebException] {
-            Write-Error "Failed to connect to authentication service. Please check your network connection and the environment URL."
-            throw "Authentication failed: $_"
-        }
         catch {
-            Write-Error "Authentication failed. Please verify your credentials and tenant information."
-            throw "Authentication error: $_"
+            throw
         }
     }
 }

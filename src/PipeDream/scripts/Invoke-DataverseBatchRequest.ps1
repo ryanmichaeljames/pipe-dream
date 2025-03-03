@@ -88,37 +88,9 @@ function Invoke-DataverseBatchRequest {
     [OutputType([string])]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [ValidateNotNull()]
-        [ValidateScript({
-            if (-not $_.access_token) {
-                throw "Token object must contain an access_token property."
-            }
-            if (-not $_.token_type) {
-                throw "Token object must contain a token_type property."
-            }
-            if (-not $_.resource) {
-                throw "Token object must contain a resource property."
-            }
-            return $true
-        })]
         [PSCustomObject]$Token,
 
         [Parameter(Mandatory = $true, Position = 1)]
-        [ValidateNotNull()]
-        [ValidateScript({
-            if ($_.Count -eq 0) {
-                throw "Requests array cannot be empty."
-            }
-            foreach ($request in $_) {
-                if (-not $request.Method -or -not $request.Path) {
-                    throw "Each request must contain at least Method and Path properties."
-                }
-                if (-not @('GET', 'POST', 'PATCH', 'DELETE', 'PUT') -contains $request.Method) {
-                    throw "Invalid HTTP method: $($request.Method). Allowed methods are: GET, POST, PATCH, DELETE, PUT."
-                }
-            }
-            return $true
-        })]
         [array]$Requests,
 
         [Parameter(Mandatory = $false)]
@@ -278,26 +250,8 @@ function Invoke-DataverseBatchRequest {
 
             return $responseContent
         }
-        catch [System.Net.WebException] {
-            $statusCode = if ($_.Exception.Response) { $_.Exception.Response.StatusCode } else { "Unknown" }
-            Write-Error "Dataverse batch request failed with status code $statusCode. Error: $($_.Exception.Message)"
-            
-            if ($_.Exception.Response) {
-                try {
-                    $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
-                    $responseBody = $reader.ReadToEnd()
-                    Write-Error "Response body: $responseBody"
-                }
-                catch {
-                    Write-Verbose "Could not read response stream: $_"
-                }
-            }
-            
-            throw "Dataverse batch request failed: $($_.Exception.Message)"
-        }
         catch {
-            Write-Error "An unexpected error occurred during batch request execution: $($_.Exception.Message)"
-            throw "Unexpected error during batch request: $($_.Exception.Message)"
+            throw
         }
     }
 
