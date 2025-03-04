@@ -89,6 +89,7 @@ Executes multiple Dataverse API requests in a single HTTP request, improving per
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | Token     | PSCustomObject | The authentication token object obtained from Get-DataverseAuthToken. This object must contain `access_token`, `token_type`, `expires_in`, `expires_at`, and `resource` properties. |
+| BatchId | String | **Optional:** The batch Id (GUID) to use. |
 | Requests  | Array | An array of request objects. Each request should have `Method`, `Path`, and optionally `Body`, `Headers`, and `ContentId` properties. |
 | UseChangeset | Switch | When specified, all requests are included in a single changeset, making them transactional. All operations will succeed or fail together. |
 | ContinueOnError | Switch | When specified, batch execution will continue even if individual requests fail. |
@@ -107,7 +108,10 @@ $request2 = New-DataverseBatchRequest `
   -Path "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)"
 
 # Use the requests in a batch operation
-Invoke-DataverseBatchRequest -Token "AUTH_TOKEN" -Requests @($request1, $request2)
+Invoke-DataverseBatchRequest `
+  -Token "AUTH_TOKEN" `
+  -BatchId "00000000-0000-0000-0000-000000000000" `
+  -Requests @($request1, $request2) 
 ```
 
 ```powershell
