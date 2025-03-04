@@ -20,7 +20,6 @@ jobs:
       run: |
         New-Item -Path 'dist\PipeDream' -ItemType Directory -Force | Out-Null
         Copy-Item -Path 'src\PipeDream\*' -Destination 'dist\PipeDream' -Recurse
-        Copy-Item -Path 'CHANGELOG.md', 'LICENSE.md', 'README.md' -Destination 'dist\PipeDream'
         Compress-Archive -Path 'dist\PipeDream' -DestinationPath 'PipeDream_${{ github.event.inputs.tag }}.zip'
         Get-ChildItem -Path 'dist' -Recurse
 

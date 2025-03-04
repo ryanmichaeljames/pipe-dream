@@ -27,12 +27,15 @@ function Invoke-DataverseBatchRequest {
     .PARAMETER ContinueOnError
     When specified, batch execution will continue even if individual requests fail.
 
+    .PARAMETER BatchId
+    Optional unique identifier for the batch. If not specified, a new GUID will be generated.
+
     .OUTPUTS
     System.String containing the raw response from the Dataverse batch operation.
     The response contains individual results for each request in the batch.
 
     .EXAMPLE
-    # Create a batch that updates a record and retrieves it in a single operation
+    # Create a batch that updates a record and retrieves it in a single operation with a custom batch id for tracking purposes
     # Update an account
     $request1 = New-DataverseBatchRequest `
         -Method "PUT" `
@@ -45,7 +48,8 @@ function Invoke-DataverseBatchRequest {
         -Path "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)"
 
     # Use the requests in a batch operation
-    Invoke-DataverseBatchRequest -Token "AUTH_TOKEN" -Requests @($request1, $request2)
+    $batchId = "00000000-0000-0000-0000-000000000000"
+    Invoke-DataverseBatchRequest -Token "AUTH_TOKEN" -BatchId $batchId -Requests @($request1, $request2)
 
     .EXAMPLE
     # Create a changeset that references the result of the first request in subsequent requests
@@ -97,7 +101,10 @@ function Invoke-DataverseBatchRequest {
         [switch]$UseChangeset,
 
         [Parameter(Mandatory = $false)]
-        [switch]$ContinueOnError
+        [switch]$ContinueOnError,
+
+        [Parameter(Mandatory = $false)]
+        [string]$BatchId
     )
 
     begin {
@@ -116,8 +123,17 @@ function Invoke-DataverseBatchRequest {
         $baseUrl = $Token.resource
         Write-Verbose "Base URL: $baseUrl"
         
-        # Create a boundary for the multipart request
-        $batchBoundary = "batch_" + [Guid]::NewGuid().ToString()
+        # Use provided BatchId or generate a new one
+        if (-not $BatchId) {
+            $BatchId = [Guid]::NewGuid().ToString()
+            Write-Verbose "Generated new BatchId: $BatchId"
+        }
+        else {
+            Write-Verbose "Using provided BatchId: $BatchId"
+        }
+        
+        # Create a boundary for the multipart request using the BatchId
+        $batchBoundary = "batch_" + $BatchId
         $changesetBoundary = "changeset_" + [Guid]::NewGuid().ToString()
         Write-Verbose "Batch boundary: $batchBoundary"
         Write-Verbose "Changeset boundary: $changesetBoundary"

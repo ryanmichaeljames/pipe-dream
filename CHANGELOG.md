@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.1
+- Add `BatchId` parameter to `Invoke-DataverseBatchRequest`
+
 ## v1.1.0
 - Update `Get-DataverseAuthToken` function to return expected token object property names.
 - Add `New-DataverseBatchRequest` function that creates a request object for use with Invoke-DataverseBatchRequest.
