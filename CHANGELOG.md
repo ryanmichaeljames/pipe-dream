@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.0
+## v2.1.0
 - Initial release of PipeDream PowerShell module
 - Added Dataverse authentication functionality
   - Implemented `Get-DataverseAuthToken` command for obtaining authentication tokens
