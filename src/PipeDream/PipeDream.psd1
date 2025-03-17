@@ -24,7 +24,13 @@
     PowerShellVersion = '5.1'
     
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @('Get-DataverseAuthToken')
+    FunctionsToExport = @(
+        'Get-DataverseAuthToken',
+        'Invoke-DataverseGet',
+        'Invoke-DataversePost',
+        'Invoke-DataversePatch',
+        'Invoke-DataverseDelete'
+    )
     
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport = @()
@@ -46,6 +52,9 @@
             
             # A URL to the main website for this project.
             ProjectUri = 'https://github.com/ryanmichaeljames/pipe-dream'
+            
+            # A URL to an icon representing this module.
+            IconUri = 'https://www.ryanjames.dev/assets/img/pipe-dream-logo.png'
             
             # ReleaseNotes of this module
             ReleaseNotes = 'https://github.com/ryanmichaeljames/pipe-dream/blob/main/CHANGELOG.md'
