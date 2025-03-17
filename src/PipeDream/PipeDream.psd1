@@ -3,16 +3,16 @@
     RootModule = 'PipeDream.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.1.0'
+    ModuleVersion = '2.1.0'
     
     # ID used to uniquely identify this module
-    GUID = '38e5ca4f-8e7d-4c6e-9c4a-6e0c9e4b5bd0'
+    GUID = '63075401-baaa-4011-b646-6bde9e6e1a8b'
     
     # Author of this module
     Author = 'Ryan James'
     
     # Company or vendor of this module
-    CompanyName = 'Ryan James'
+    CompanyName = 'ryanjames.dev'
     
     # Copyright statement for this module
     Copyright = '(c) 2025 Ryan James. All rights reserved.'
