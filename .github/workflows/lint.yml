@@ -5,6 +5,9 @@ on:
     paths:
       - src/**
       - .github/workflows/lint.yml
+  pull_request:
+    branches:
+      - main
 
 jobs:
   lint:
