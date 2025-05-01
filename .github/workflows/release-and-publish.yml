@@ -3,9 +3,9 @@ name: Build and Publish
 on:
   push:
     tags:
-      - 'test-v*'
+      - 'v*'
     branches:
-      - release-and-publish
+      - main
 
 jobs:
   build-and-publish:
