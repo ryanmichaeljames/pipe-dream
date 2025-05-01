@@ -6,7 +6,7 @@ on:
 
 jobs:
   publish-to-gallery:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Publish
@@ -14,4 +14,4 @@ jobs:
           NUGET_KEY: ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
         shell: pwsh
         run: |
-          Publish-Module -Path .\src\PipeDream -NuGetApiKey $env:NUGET_KEY -Verbose
+          Publish-Module -Path ./src/PipeDream -NuGetApiKey $env:NUGET_KEY -Verbose

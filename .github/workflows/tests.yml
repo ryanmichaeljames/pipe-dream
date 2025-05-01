@@ -2,11 +2,23 @@ name: Test PowerShell Module
 on: push
 
 jobs:
-  pester-test:
-    name: Pester test
-    runs-on: windows-latest
+  test:
+    name: Test and lint
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Cache PowerShell modules
+        id: cacher
+        uses: actions/cache@v4
+        with:
+          path: "~/.local/share/powershell/Modules"
+          key: ${{ runner.os }}-PSScriptAnalyzer
+      - name: Install PowerShell modules
+        if: steps.cacher.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer
       - name: Run Pester tests
         shell: pwsh
         run: |
@@ -14,15 +26,17 @@ jobs:
       - name: Lint with PSScriptAnalyzer
         shell: pwsh
         run: |
-          Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module PSScriptAnalyzer -ErrorAction Stop
-          
-          Invoke-ScriptAnalyzer -Path *.ps1 -Recurse -Outvariable issues
-          $errors   = $issues.Where({$_.Severity -eq 'Error'})
+          Invoke-ScriptAnalyzer -Path ./src/PipeDream/*/*.ps1 -Recurse -Outvariable issues
+          $errors = $issues.Where({$_.Severity -eq 'Error'})
           $warnings = $issues.Where({$_.Severity -eq 'Warning'})
+          $information = $issues.Where({$_.Severity -eq 'Information'})
+
+          Write-Output "Lint summary:"
+          Write-Output "Errors: $($errors.Count)"
+          Write-Output "Warnings: $($warnings.Count)"
+          Write-Output "Information: $($information.Count)"
+
           if ($errors) {
-              Write-Error "There were $($errors.Count) errors and $($warnings.Count) warnings total." -ErrorAction Stop
-          } else {
-              Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
-          }
+              Write-Error "There were $($errors.Count) errors :(" -ErrorAction Stop
+          } 
           
