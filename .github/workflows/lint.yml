@@ -32,7 +32,7 @@ jobs:
           Write-Output "Warnings: $($warnings.Count)"
           Write-Output "Information: $($information.Count)"
 
-          if ($information) {
-              Write-Error "There were $($information.Count) errors :(" -ErrorAction Stop
+          if ($errors) {
+              Write-Error "There were $($errors.Count) errors :(" -ErrorAction Stop
           } 
           
