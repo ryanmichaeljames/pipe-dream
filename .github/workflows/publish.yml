@@ -1,5 +1,4 @@
-name: Publish PowerShell Module
-
+name: Publish
 on:
   release:
     types: [published]

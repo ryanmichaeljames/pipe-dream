@@ -1,4 +1,4 @@
-name: Test
+name: Tests
 
 on:
   pull_request:
@@ -10,8 +10,8 @@ on:
       - .github/workflows/tests.yml
 
 jobs:
-  test:
-    name: Test
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
