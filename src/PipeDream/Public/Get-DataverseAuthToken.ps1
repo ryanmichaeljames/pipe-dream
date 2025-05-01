@@ -2,20 +2,19 @@ function Get-DataverseAuthToken {
     <#
     .SYNOPSIS
         Obtains an authentication token for Dataverse API access.
-      .DESCRIPTION        The Get-DataverseAuthToken function obtains an OAuth access token for authenticating with the Dataverse API.
+    .DESCRIPTION
+        The Get-DataverseAuthToken function obtains an OAuth access token for authenticating with the Dataverse API.
         It supports service principal authentication using the Microsoft Identity Platform v2.0 endpoint and returns a formatted token object.
-      .PARAMETER TenantId
+    .PARAMETER TenantId
         The Azure AD tenant ID.
-      .PARAMETER Url
+    .PARAMETER Url
         The URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
-    
     .PARAMETER ClientId
         The Application/Client ID for authentication.
-    
     .PARAMETER ClientSecret
-        The Client secret for service principal authentication.    .EXAMPLE
+        The Client secret for service principal authentication.
+    .EXAMPLE
         $token = Get-DataverseAuthToken -TenantId "00000000-0000-0000-0000-000000000000" -Url "https://myorg.crm.dynamics.com" -ClientId "00000000-0000-0000-0000-000000000000" -ClientSecret "mySecret"
-        
     .NOTES
         This function returns a formatted token object with AccessToken, TokenType, ExpiresIn, and ExpiresOn properties.
     #>
@@ -37,14 +36,14 @@ function Get-DataverseAuthToken {
         [ValidateNotNullOrEmpty()]
         [string]$ClientSecret
     )
-      Write-Verbose "Starting Get-DataverseAuthToken for URL: $Url"
+    Write-Verbose "Starting Get-DataverseAuthToken for URL: $Url"
     
     # Normalize URL (remove trailing slash if present)
     if ($Url.EndsWith("/")) {
         $Url = $Url.TrimEnd("/")
         Write-Verbose "Normalized URL: $Url"
     }
-      try {
+    try {
         # Prepare token request - using v2 endpoint
         $tokenEndpoint = "https://login.microsoftonline.com/$TenantId/oauth2/v2.0/token"
         $scope = "https://$(([System.Uri]$Url).Host)/.default"
@@ -74,9 +73,11 @@ function Get-DataverseAuthToken {
             ExpiresOn   = $tokenExpiresOn
         }
     }
-    catch {        # Check if the error response contains a JSON payload
+    catch {
+        # Check if the error response contains a JSON payload
         if ($_.Exception.Response) {
-            try {                # Extract the error details from the response
+            try {
+                # Extract the error details from the response
                 $errorDetails = $_.ErrorDetails
                 if ($null -eq $errorDetails) {
                     # For some errors, the error details might be in the response stream
@@ -101,7 +102,7 @@ function Get-DataverseAuthToken {
                 if ($errorObject.trace_id) {
                     $detailedError += "Trace ID: $($errorObject.trace_id)`n"
                 }
-                  # Add specific guidance based on error type
+                # Add specific guidance based on error type
                 switch -Regex ($errorObject.error) {
                     "invalid_scope" {
                         $detailedError += "Guidance: Verify the resource URL format. For client credential flows, ensure the resource URL is correctly formatted and the requested permissions are allowed for this application."
