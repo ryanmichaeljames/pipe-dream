@@ -5,7 +5,10 @@
 - Like Star Wars Episodes I, II and III we dont talk about v1, v2 and v3
 
 ## v4.2.0
-- Added `Invoke-DataverseGet`
-- Added `Invoke-DataversePost`
-- Added `Invoke-DataversePatch`
-- Added `Invoke-DataverseDelete`
+### :sparkles: New features
+- Added Dataverse HTTP functions:
+  - `Invoke-DataverseGet`
+  - `Invoke-DataversePost`
+  - `Invoke-DataversePatch`
+  - `Invoke-DataverseDelete`
+- Added ability to get the Dataverse URL from the bearer token

@@ -65,7 +65,7 @@ Performs a GET request to the Dataverse API.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `AccessToken` | string | :white_check_mark: | The authentication token string (access token) obtained from Get-DataverseAuthToken |
-| `Url` | string | :white_check_mark: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`) |
+| `Url` | string | :x: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`). If not provided, the function will extract it from the AccessToken's audience (`aud`) claim |
 | `Query` | string | :white_check_mark: | The OData query to append to the base URL (for example: `/api/data/v9.2/accounts`) |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
 
@@ -91,9 +91,9 @@ $authResult = Get-DataverseAuthToken `
   -ClientId "00000000-0000-0000-0000-000000000000" `
   -ClientSecret "mySecret"
   
+# Using the URL from the token (extracted from aud claim)
 $result = Invoke-DataverseGet `
   -AccessToken $authResult.AccessToken `
-  -Url "https://myorg.crm.dynamics.com" `
   -Query "/api/data/v9.2/accounts"
 
 # Access the returned data
@@ -109,7 +109,7 @@ Performs a POST request to the Dataverse API to create new records.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `AccessToken` | string | :white_check_mark: | The authentication token string (access token) obtained from Get-DataverseAuthToken |
-| `Url` | string | :white_check_mark: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`) |
+| `Url` | string | :x: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`). If not provided, the function will extract it from the AccessToken's audience (`aud`) claim |
 | `Query` | string | :white_check_mark: | The OData query to append to the base URL (for example: `/api/data/v9.2/accounts`) |
 | `Body` | object | :white_check_mark: | The request body as a hashtable or PSObject containing the data for the new record |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
@@ -142,9 +142,9 @@ $body = @{
     accountcategorycode = 1
 }
   
+# Using the URL from the token (extracted from aud claim)
 $result = Invoke-DataversePost `
   -AccessToken $authResult.AccessToken `
-  -Url "https://myorg.crm.dynamics.com" `
   -Query "/api/data/v9.2/accounts" `
   -Body $body
 
@@ -170,7 +170,7 @@ Performs a PATCH request to the Dataverse API to update existing records.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `AccessToken` | string | :white_check_mark: | The authentication token string (access token) obtained from Get-DataverseAuthToken |
-| `Url` | string | :white_check_mark: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`) |
+| `Url` | string | :x: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`). If not provided, the function will extract it from the AccessToken's audience (`aud`) claim |
 | `Query` | string | :white_check_mark: | The OData query to append to the base URL (for example: `/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)`) |
 | `Body` | object | :white_check_mark: | The request body as a hashtable or PSObject containing the fields to update |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
@@ -200,9 +200,9 @@ $body = @{
     telephone1 = "555-123-4567"
 }
   
+# Using the URL from the token (extracted from aud claim) 
 $result = Invoke-DataversePatch `
   -AccessToken $authResult.AccessToken `
-  -Url "https://myorg.crm.dynamics.com" `
   -Query "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)" `
   -Body $body
 
@@ -221,7 +221,7 @@ Performs a DELETE request to the Dataverse API.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `AccessToken` | string | :white_check_mark: | The authentication token string (access token) obtained from Get-DataverseAuthToken |
-| `Url` | string | :white_check_mark: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`) |
+| `Url` | string | :x: | The base URL of the Power Platform environment (for example: `https://myorg.crm.dynamics.com`). If not provided, the function will extract it from the AccessToken's audience (`aud`) claim |
 | `Query` | string | :white_check_mark: | The OData query to append to the base URL (for example: `/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)`) |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
 
@@ -245,9 +245,9 @@ $authResult = Get-DataverseAuthToken `
   -ClientId "00000000-0000-0000-0000-000000000000" `
   -ClientSecret "mySecret"
   
+# Using the URL from the token (extracted from aud claim)
 $result = Invoke-DataverseDelete `
   -AccessToken $authResult.AccessToken `
-  -Url "https://myorg.crm.dynamics.com" `
   -Query "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)"
 
 # Check if deletion was successful

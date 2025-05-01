@@ -7,9 +7,9 @@ function Invoke-DataversePatch {
         authentication token and returns the complete HTTP response including status code, headers and content.
         PATCH is used for updating existing records in Dataverse.
     .PARAMETER AccessToken
-        The authentication token string (access token) obtained from Get-DataverseAuthToken.
-    .PARAMETER Url
-        The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
+        The authentication token string (access token) obtained from Get-DataverseAuthToken.    .PARAMETER Url
+        Optional. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
+        If not provided, the function will try to extract it from the AccessToken.
     .PARAMETER Query
         The OData query to append to the base URL. Should start with a forward slash.
         For example: /api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)
@@ -41,9 +41,8 @@ function Invoke-DataversePatch {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
-        
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+
+        [Parameter(Mandatory = $false)]
         [string]$Url,
         
         [Parameter(Mandatory = $true)]
@@ -57,6 +56,23 @@ function Invoke-DataversePatch {
         [Parameter(Mandatory = $false)]
         [hashtable]$Headers = @{}
     )
+    
+    # If URL is not provided, try to extract it from the access token
+    if ([string]::IsNullOrEmpty($Url)) {
+        Write-Verbose "Url not provided. Attempting to extract from the access token."
+        $extractedUrl = Get-UrlFromAccessToken -AccessToken $AccessToken
+        
+        if ($extractedUrl) {
+            $Url = $extractedUrl
+        }
+        else {
+            throw "Could not extract URL from the access token."
+        }
+    }
+    
+    if ([string]::IsNullOrEmpty($Url)) {
+        throw "URL is required. Either provide it as a parameter or use an access token that contains an 'aud' claim."
+    }
     
     Write-Verbose "Starting Invoke-DataversePatch for URL: $Url"
     

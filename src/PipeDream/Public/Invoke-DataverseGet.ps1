@@ -5,10 +5,14 @@ function Invoke-DataverseGet {
     .DESCRIPTION
         The Invoke-DataverseGet function makes a GET request to the Dataverse API using a provided
         authentication token and returns the complete HTTP response including status code, headers and content.
+        
+        If the Url parameter is not provided, the function will attempt to extract the audience (aud) claim
+        from the access token and use it as the URL.
     .PARAMETER AccessToken
         The authentication token string (access token) obtained from Get-DataverseAuthToken.
     .PARAMETER Url
-        The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
+        Optional. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
+        If not provided, the function will try to extract it from the AccessToken.
     .PARAMETER Query
         The OData query to append to the base URL. Should start with a forward slash.
         For example: /api/data/v9.2/accounts
@@ -16,7 +20,7 @@ function Invoke-DataverseGet {
         Optional. Additional headers to include in the request.
     .EXAMPLE
         $authResult = Get-DataverseAuthToken -TenantId "00000000-0000-0000-0000-000000000000" -Url "https://myorg.crm.dynamics.com" -ClientId "00000000-0000-0000-0000-000000000000" -ClientSecret "mySecret"
-        $result = Invoke-DataverseGet -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts"
+        $result = Invoke-DataverseGet -AccessToken $authResult.AccessToken -Query "/api/data/v9.2/accounts"
         
         # The result object will contain:
         # - StatusCode: HTTP status code of the response
@@ -25,6 +29,9 @@ function Invoke-DataverseGet {
         # - RawContent: Raw response content string
         # - Success: Boolean indicating if the request was successful
         # - Error: Error message (only if Success is $false)
+    .EXAMPLE
+        $authResult = Get-DataverseAuthToken -TenantId "00000000-0000-0000-0000-000000000000" -Url "https://myorg.crm.dynamics.com" -ClientId "00000000-0000-0000-0000-000000000000" -ClientSecret "mySecret"
+        $result = Invoke-DataverseGet -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts"
     .NOTES
         This function accepts an access token directly. Token expiration must be handled by the caller.
         The function returns the complete HTTP response with simple error handling.
@@ -35,8 +42,7 @@ function Invoke-DataverseGet {
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
         
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $false)]
         [string]$Url,
         
         [Parameter(Mandatory = $true)]
@@ -46,6 +52,22 @@ function Invoke-DataverseGet {
         [Parameter(Mandatory = $false)]
         [hashtable]$Headers = @{}
     )
+    # If URL is not provided, try to extract it from the access token
+    if ([string]::IsNullOrEmpty($Url)) {
+        Write-Verbose "Url not provided. Attempting to extract from the access token."
+        $extractedUrl = Get-UrlFromAccessToken -AccessToken $AccessToken
+        
+        if ($extractedUrl) {
+            $Url = $extractedUrl
+        }
+        else {
+            throw "Could not extract URL from the access token."
+        }
+    }
+    
+    if ([string]::IsNullOrEmpty($Url)) {
+        throw "URL is required. Either provide it as a parameter or use an access token that contains an 'aud' claim."
+    }
     
     Write-Verbose "Starting Invoke-DataverseGet for URL: $Url"
     
@@ -63,7 +85,9 @@ function Invoke-DataverseGet {
     
     # Construct the full request URL
     $requestUrl = "$Url$Query"
-    Write-Verbose "Full request URL: $requestUrl"    # Prepare headers with authentication
+    Write-Verbose "Full request URL: $requestUrl"    
+    
+    # Prepare headers with authentication
     $authHeaders = @{
         "Authorization"    = "Bearer $AccessToken"
         "Accept"           = "application/json"
