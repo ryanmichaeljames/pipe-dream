@@ -1,13 +1,12 @@
 name: Lint PowerShell
 
 on:
-  push:
-    paths:
-      - src/**
-      - .github/workflows/lint.yml
   pull_request:
     branches:
       - main
+    paths:
+      - src/**
+      - .github/workflows/lint.yml
 
 jobs:
   lint:
