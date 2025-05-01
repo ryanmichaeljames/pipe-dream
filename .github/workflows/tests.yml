@@ -17,4 +17,7 @@ jobs:
         shell: pwsh
         run: |
           $testResults = Invoke-Pester -Path ./tests -PassThru
-          
+          if ($testResults.FailedCount -ne 0) {
+              Write-Error "One or more tests failed."
+              exit 1
+          }
