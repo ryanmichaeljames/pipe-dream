@@ -1,9 +1,12 @@
 name: Test PowerShell Module
 
 on:
+  push:
+    paths:
+      - src/**
+      - tests/**
+      - .github/workflows/tests.yml
   pull_request:
-    types:
-      - opened
     branches:
       - main
 
