@@ -1,0 +1,79 @@
+name: Build and Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+        
+      - name: Create GitHub Release and Validate Version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Extract version from tag
+          $tag = "${{ github.ref_name }}"
+          $tagVersion = $tag.TrimStart('v')
+          Write-Host "Tag Version: $tagVersion"
+          
+          # Extract version from module manifest
+          $manifestPath = ".\src\PipeDream\PipeDream.psd1"
+          $moduleManifest = Import-PowerShellDataFile -Path $manifestPath
+          $moduleVersion = $moduleManifest.ModuleVersion
+          Write-Host "Module Version: $moduleVersion"
+          
+          # Verify versions match
+          if ($tagVersion -ne $moduleVersion) {
+            Write-Error "Version mismatch: Tag version ($tagVersion) does not match the module version ($moduleVersion) in PipeDream.psd1"
+            exit 1
+          }
+          
+          Write-Host "✓ Versions match! Proceeding with GitHub release creation."
+          
+          $changelogPath = ".\CHANGELOG.md"
+          $releaseTitle = "PipeDream $tag"
+          $notes = "Release $tag"
+
+          # Extract release notes from CHANGELOG.md
+          if (Test-Path $changelogPath) {
+            $changelogContent = Get-Content $changelogPath -Raw
+            
+            # Try to find the section corresponding to the current tag and extract only the content under that section
+            $pattern = "(?ms)## $tag\r?\n(.*?)(?:\r?\n## |$)"
+            $match = [regex]::Match($changelogContent, $pattern)
+
+            if ($match.Success) {
+              # Get the content after the version header
+              $notes = $match.Groups[1].Value.Trim()
+            } else {
+              Write-Error "No version section found in CHANGELOG.md for version $tag"
+              exit 1
+            }
+          }
+          
+          # Create temporary file for release notes
+          $notesPath = ".\release-notes.md"
+          $notes | Out-File -FilePath $notesPath -Encoding utf8
+          
+          # Create the release using GitHub CLI
+          gh release create $tag `
+            --title $tag `
+            --notes-file $notesPath `
+            --fail-on-no-commits
+        shell: pwsh
+
+      # - name: Publish to PowerShell Gallery
+      #   env:
+      #     POWERSHELL_GALLERY_API_KEY: ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
+      #   run: |
+      #     Publish-Module -Path ".\src\PipeDream" -NuGetApiKey $env:POWERSHELL_GALLERY_API_KEY -Verbose
+      #   shell: pwsh
