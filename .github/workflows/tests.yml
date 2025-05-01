@@ -1,0 +1,26 @@
+name: Test PowerShell Module
+
+on:
+  push:
+    paths:
+      - src/**
+      - tests/**
+      - .github/workflows/tests.yml
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Pester tests
+        shell: pwsh
+        run: |
+          $testResults = Invoke-Pester -Path ./tests -PassThru
+          if ($testResults.FailedCount -ne 0) {
+              Write-Error "One or more tests failed."
+              exit 1
+          }

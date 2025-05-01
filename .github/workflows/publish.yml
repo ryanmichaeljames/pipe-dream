@@ -1,46 +1,17 @@
-name: Build and Publish
+name: Publish PowerShell Module
 
 on:
-  push:
-    tags:
-      - 'v*'
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
-  build-and-publish:
-    runs-on: windows-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+  publish:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-        
-      - name: Validate Version
-        run: |
-          # Extract version from tag
-          $tag = "${{ github.ref_name }}"
-          $tagVersion = $tag.TrimStart('v')
-          Write-Host "Tag Version: $tagVersion"
-          
-          # Extract version from module manifest
-          $manifestPath = ".\src\PipeDream\PipeDream.psd1"
-          $moduleManifest = Import-PowerShellDataFile -Path $manifestPath
-          $moduleVersion = $moduleManifest.ModuleVersion
-          Write-Host "Module Version: $moduleVersion"
-          
-          # Verify versions match
-          if ($tagVersion -ne $moduleVersion) {
-            Write-Error "Version mismatch: Tag version ($tagVersion) does not match the module version ($moduleVersion) in PipeDream.psd1"
-            exit 1
-          }
-          
-          Write-Host "✓ Versions match!"
-        shell: pwsh
-
-      - name: Publish to PowerShell Gallery
+      - name: Publish
         env:
-          POWERSHELL_GALLERY_API_KEY: ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
-        run: |
-          Publish-Module -Path ".\src\PipeDream" -NuGetApiKey $env:POWERSHELL_GALLERY_API_KEY -Verbose
+          NUGET_KEY: ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
         shell: pwsh
+        run: |
+          Publish-Module -Path ./src/PipeDream -NuGetApiKey $env:NUGET_KEY -Verbose
