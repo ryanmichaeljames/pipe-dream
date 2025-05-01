@@ -16,9 +16,7 @@ jobs:
         with:
           fetch-depth: 0
         
-      - name: Create GitHub Release and Validate Version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate Version
         run: |
           # Extract version from tag
           $tag = "${{ github.ref_name }}"
@@ -37,43 +35,12 @@ jobs:
             exit 1
           }
           
-          Write-Host "✓ Versions match! Proceeding with GitHub release creation."
-          
-          $changelogPath = ".\CHANGELOG.md"
-          $releaseTitle = "PipeDream $tag"
-          $notes = "Release $tag"
-
-          # Extract release notes from CHANGELOG.md
-          if (Test-Path $changelogPath) {
-            $changelogContent = Get-Content $changelogPath -Raw
-            
-            # Try to find the section corresponding to the current tag and extract only the content under that section
-            $pattern = "(?ms)## $tag\r?\n(.*?)(?:\r?\n## |$)"
-            $match = [regex]::Match($changelogContent, $pattern)
-
-            if ($match.Success) {
-              # Get the content after the version header
-              $notes = $match.Groups[1].Value.Trim()
-            } else {
-              Write-Error "No version section found in CHANGELOG.md for version $tag"
-              exit 1
-            }
-          }
-          
-          # Create temporary file for release notes
-          $notesPath = ".\release-notes.md"
-          $notes | Out-File -FilePath $notesPath -Encoding utf8
-          
-          # Create the release using GitHub CLI
-          gh release create $tag `
-            --title $tag `
-            --notes-file $notesPath `
-            --fail-on-no-commits
+          Write-Host "✓ Versions match!"
         shell: pwsh
 
-      # - name: Publish to PowerShell Gallery
-      #   env:
-      #     POWERSHELL_GALLERY_API_KEY: ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
-      #   run: |
-      #     Publish-Module -Path ".\src\PipeDream" -NuGetApiKey $env:POWERSHELL_GALLERY_API_KEY -Verbose
-      #   shell: pwsh
+      - name: Publish to PowerShell Gallery
+        env:
+          POWERSHELL_GALLERY_API_KEY: ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
+        run: |
+          Publish-Module -Path ".\src\PipeDream" -NuGetApiKey $env:POWERSHELL_GALLERY_API_KEY -Verbose
+        shell: pwsh
