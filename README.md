@@ -1,6 +1,4 @@
-# PipeDream
-
-![PipeDream Logo](https://www.ryanjames.dev/assets/img/pipe-dream-logo.png)
+<img src="https://www.ryanjames.dev/assets/img/pipe-dream-logo.png" alt="PipeDream Logo" width="50%">
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ryanmichaeljames_pipe-dream&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ryanmichaeljames_pipe-dream) [![Tests](https://github.com/ryanmichaeljames/pipe-dream/actions/workflows/tests.yml/badge.svg)](https://github.com/ryanmichaeljames/pipe-dream/actions/workflows/tests.yml)
 
