@@ -22,11 +22,11 @@ Install-Module -Name PipeDream
 
 ### Manual Installation
 
-1. Clone this repository
-2. Import the module:
-    ```powershell
-    Import-Module -Path "C:\path\to\pipe-dream\src\PipeDream\PipeDream.psm1"
-    ```
+Clone this repositor and import the module:
+
+```powershell
+Import-Module -Path "C:\path\to\pipe-dream\src\PipeDream\PipeDream.psm1"
+```
 
 ## Usage
 
@@ -297,7 +297,23 @@ if ($result.Success) {
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome!
+
+### How to
+
+- Fork the repository
+- Create a feature or bugfix branch
+- Submit a pull request to the `main` branch
+
+### Pester Tests
+
+If you are adding or modifying code, include Pester tests to cover your changes.
+
+To run tests locally:
+
+```powershell
+Invoke-Pester -Path ./tests
+```
 
 ## Roadmap
 
@@ -306,10 +322,6 @@ The following features are planned for future releases:
 2. Automatic token refresh for long-running operations
 3. Implementation of Dataverse Web API wrapper functions
 4. Bulk data operations
-
-## License
-
-[MIT License](LICENSE)
 
 ## Attributions
 
