@@ -1,13 +1,10 @@
 name: Tests
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
-    paths:
-      - src/**
-      - tests/**
-      - .github/workflows/tests.yml
+    branches: [ "main" ]
 
 jobs:
   tests:
