@@ -22,7 +22,7 @@ Install-Module -Name PipeDream
 
 ### Manual Installation
 
-Clone this repositor and import the module:
+Clone this repository and import the module:
 
 ```powershell
 Import-Module -Path "C:\path\to\pipe-dream\src\PipeDream\PipeDream.psm1"
