@@ -1,28 +1,36 @@
-<img src="https://www.ryanjames.dev/assets/img/pipe-dream-logo.png" alt="PipeDream Logo" width="50%">
+# PipeDream
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ryanmichaeljames_pipe-dream&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ryanmichaeljames_pipe-dream) [![Tests](https://github.com/ryanmichaeljames/pipe-dream/actions/workflows/tests.yml/badge.svg)](https://github.com/ryanmichaeljames/pipe-dream/actions/workflows/tests.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ryanmichaeljames_pipe-dream&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ryanmichaeljames_pipe-dream)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ryanmichaeljames_pipe-dream&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ryanmichaeljames_pipe-dream)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=ryanmichaeljames_pipe-dream&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=ryanmichaeljames_pipe-dream)
+[![Tests](https://github.com/ryanmichaeljames/pipe-dream/actions/workflows/tests.yml/badge.svg)](https://github.com/ryanmichaeljames/pipe-dream/actions/workflows/tests.yml)
 
-PipeDream is a PowerShell module designed to facilitate deployment pipelines for Power Platform environments. It provides tools for authentication, data manipulation, and API interaction with Dataverse.
+![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/PipeDream)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/ryanmichaeljames/pipe-dream/latest)
+![PowerShell Gallery Downloads](https://img.shields.io/powershellgallery/dt/PipeDream)
+![GitHub License](https://img.shields.io/github/license/ryanmichaeljames/pipe-dream)
 
-# Installation
+> A PowerShell module for automating Power Platform deployments
 
-## From PowerShell Gallery
+## Installation
+
+### From PowerShell Gallery
 
 ```powershell
-Install-Module -Name PipeDream -Scope CurrentUser
+Install-Module -Name PipeDream
 ```
 
-## Manual Installation
+### Manual Installation
 
-1. Clone this repository
-2. Import the module:
-    ```powershell
-    Import-Module -Path "C:\path\to\pipe-dream\src\PipeDream\PipeDream.psm1"
-    ```
+Clone this repository and import the module:
 
-# Usage
+```powershell
+Import-Module -Path "C:\path\to\pipe-dream\src\PipeDream\PipeDream.psm1"
+```
 
-## Authentication
+## Usage
+
+### Authentication
 
 ```powershell
 $token = Get-DataverseAuthToken `
@@ -32,7 +40,7 @@ $token = Get-DataverseAuthToken `
   -ClientSecret "CLIENT_SECRET"
 ```
 
-## Azure DevOps Pipeline
+### Azure DevOps Pipeline
 
 ```yml
 steps:
@@ -61,13 +69,13 @@ steps:
       -ClientSecret "$(PowerPlatformSetConnectionVariables.BuildTools.ClientSecret)"
 ```
 
-# Functions
+## Functions
 
-## Get-DataverseAuthToken
+### Get-DataverseAuthToken
 
 Obtains an authentication token for Dataverse API access.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -76,7 +84,7 @@ Obtains an authentication token for Dataverse API access.
 | `ClientId` | string | :white_check_mark: | The Application/Client ID for authentication |
 | `ClientSecret` | string | :white_check_mark: | The Client secret for service principal authentication |
 
-### Return Value
+#### Return Value
 
 The function returns a PSCustomObject with the following properties:
 
@@ -87,11 +95,11 @@ The function returns a PSCustomObject with the following properties:
 | `ExpiresIn` | The token validity duration in seconds |
 | `ExpiresOn` | A DateTime object indicating when the token will expire |
 
-## Invoke-DataverseGet
+### Invoke-DataverseGet
 
 Performs a GET request to the Dataverse API.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -100,7 +108,7 @@ Performs a GET request to the Dataverse API.
 | `Query` | string | :white_check_mark: | The OData query to append to the base URL (for example: `/api/data/v9.2/accounts`) |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
 
-### Return Value
+#### Return Value
 
 The function returns a PSCustomObject with the following properties:
 
@@ -113,7 +121,7 @@ The function returns a PSCustomObject with the following properties:
 | `Success` | Boolean indicating if the request was successful |
 | `Error` | Error message (only if Success is $false) |
 
-### Example Usage
+#### Example Usage
 
 ```powershell
 $authResult = Get-DataverseAuthToken `
@@ -131,11 +139,11 @@ $result = Invoke-DataverseGet `
 $accounts = $result.Content.value
 ```
 
-## Invoke-DataversePost
+### Invoke-DataversePost
 
 Performs a POST request to the Dataverse API to create new records.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -145,7 +153,7 @@ Performs a POST request to the Dataverse API to create new records.
 | `Body` | object | :white_check_mark: | The request body as a hashtable or PSObject containing the data for the new record |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
 
-### Return Value
+#### Return Value
 
 The function returns a PSCustomObject with the following properties:
 
@@ -158,7 +166,7 @@ The function returns a PSCustomObject with the following properties:
 | `Success` | Boolean indicating if the request was successful |
 | `Error` | Error message (only if Success is $false) |
 
-### Example Usage
+#### Example Usage
 
 ```powershell
 $authResult = Get-DataverseAuthToken `
@@ -192,11 +200,11 @@ if ($result.Success) {
 }
 ```
 
-## Invoke-DataversePatch
+### Invoke-DataversePatch
 
 Performs a PATCH request to the Dataverse API to update existing records.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -206,7 +214,7 @@ Performs a PATCH request to the Dataverse API to update existing records.
 | `Body` | object | :white_check_mark: | The request body as a hashtable or PSObject containing the fields to update |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
 
-### Return Value
+#### Return Value
 
 The function returns a PSCustomObject with the following properties:
 
@@ -217,7 +225,7 @@ The function returns a PSCustomObject with the following properties:
 | `Success` | Boolean indicating if the request was successful |
 | `Error` | Error message (only if Success is $false) |
 
-### Example Usage
+#### Example Usage
 
 ```powershell
 $authResult = Get-DataverseAuthToken `
@@ -243,11 +251,11 @@ if ($result.Success) {
 }
 ```
 
-## Invoke-DataverseDelete
+### Invoke-DataverseDelete
 
 Performs a DELETE request to the Dataverse API.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -256,7 +264,7 @@ Performs a DELETE request to the Dataverse API.
 | `Query` | string | :white_check_mark: | The OData query to append to the base URL (for example: `/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)`) |
 | `Headers` | hashtable | :x: | Additional headers to include in the request |
 
-### Return Value
+#### Return Value
 
 The function returns a PSCustomObject with the following properties:
 
@@ -267,7 +275,7 @@ The function returns a PSCustomObject with the following properties:
 | `Success` | Boolean indicating if the request was successful |
 | `Error` | Error message (only if Success is $false) |
 
-### Example Usage
+#### Example Usage
 
 ```powershell
 $authResult = Get-DataverseAuthToken `
@@ -287,11 +295,27 @@ if ($result.Success) {
 }
 ```
 
-# Contributing
+## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome!
 
-# Roadmap
+### How to
+
+- Fork the repository
+- Create a feature or bugfix branch
+- Submit a pull request to the `main` branch
+
+### Pester Tests
+
+If you are adding or modifying code, include Pester tests to cover your changes.
+
+To run tests locally:
+
+```powershell
+Invoke-Pester -Path ./tests
+```
+
+## Roadmap
 
 The following features are planned for future releases:
 1. Token caching to minimize authentication requests
@@ -299,10 +323,6 @@ The following features are planned for future releases:
 3. Implementation of Dataverse Web API wrapper functions
 4. Bulk data operations
 
-# License
-
-[MIT License](LICENSE)
-
-# Attributions
+## Attributions
 
 [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=ryanmichaeljames_pipe-dream)
