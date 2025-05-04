@@ -1,3 +1,5 @@
+![PipeDream Logo](/assets/logo_banner.png)
+
 # PipeDream
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ryanmichaeljames_pipe-dream&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ryanmichaeljames_pipe-dream)
