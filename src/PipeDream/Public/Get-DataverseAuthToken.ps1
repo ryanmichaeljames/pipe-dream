@@ -74,22 +74,17 @@ function Get-DataverseAuthToken {
         }
     }
     catch {
-        # Check if the error response contains a JSON payload
-        if ($_.Exception.Response) {
+        # Handle HTTP response exceptions from Invoke-RestMethod
+        if ($_.Exception -is [Microsoft.PowerShell.Commands.HttpResponseException]) {
             try {
-                # Extract the error details from the response
-                $errorDetails = $_.ErrorDetails
-                if ($null -eq $errorDetails) {
-                    # For some errors, the error details might be in the response stream
-                    $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
-                    $reader.BaseStream.Position = 0
-                    $reader.DiscardBufferedData()
-                    $responseContent = $reader.ReadToEnd()
-                    $errorObject = $responseContent | ConvertFrom-Json
-                } 
-                else {
-                    $errorObject = $errorDetails.Message | ConvertFrom-Json
+                # Get response content from ErrorDetails if available
+                $responseContent = ""
+                if ($_.ErrorDetails) {
+                    $responseContent = $_.ErrorDetails.Message
                 }
+                
+                # Try to parse as JSON
+                $errorObject = $responseContent | ConvertFrom-Json
 
                 # Format a detailed error message
                 $detailedError = "Authentication Error Code: $($errorObject.error)`n"
@@ -102,6 +97,7 @@ function Get-DataverseAuthToken {
                 if ($errorObject.trace_id) {
                     $detailedError += "Trace ID: $($errorObject.trace_id)`n"
                 }
+                
                 # Add specific guidance based on error type
                 switch -Regex ($errorObject.error) {
                     "invalid_scope" {
@@ -135,13 +131,13 @@ function Get-DataverseAuthToken {
             }
             catch {
                 # Fallback if we can't parse the error response
-                $errorMessage = "Failed to obtain authentication token (400 Bad Request): $($_.Exception.Message)"
+                $errorMessage = "Failed to obtain authentication token: $($_.Exception.Message)"
                 Write-Error $errorMessage
                 throw $errorMessage
             }
         }
         else {
-            # Handle non-400 errors
+            # Handle non-HTTP errors
             $errorMessage = "Failed to obtain authentication token: $($_.Exception.Message)"
             Write-Error $errorMessage
             throw $errorMessage
