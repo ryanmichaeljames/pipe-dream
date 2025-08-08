@@ -14,6 +14,16 @@
 
 > A PowerShell module for automating Power Platform deployments
 
+## Requirements
+
+- PowerShell 5.1 or later
+- An Azure AD application (service principal) with access to your Power Platform environment
+
+## Features
+
+- Retrieve OAuth tokens for Dataverse using service principal credentials
+- Lightweight wrappers for Dataverse Web API GET, POST, PATCH, and DELETE operations
+
 ## Installation
 
 ### From PowerShell Gallery

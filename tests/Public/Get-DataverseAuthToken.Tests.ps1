@@ -5,43 +5,36 @@ BeforeAll {
     Import-Module $modulePath -Force
 }
 
-Describe "Get-DataverseAuthToken" {    BeforeAll {
+Describe "Get-DataverseAuthToken" {
+    BeforeAll {
         # Mock Invoke-RestMethod to avoid actual API calls during testing
         Mock Invoke-RestMethod -ModuleName PipeDream {
             return @{
                 access_token = "mock-access-token"
-                token_type = "Bearer"
-                expires_in = 3600
+                token_type   = "Bearer"
+                expires_in   = 3600
             }
         }
     }
-    
-    It "Returns a token object with the expected properties" {
-        # Act
+
+    It "Returns a token object with expected properties and future ExpiresOn" {
         $result = Get-DataverseAuthToken -TenantId "mock-tenant-id" -Url "https://mock-org.crm.dynamics.com" -ClientId "mock-client-id" -ClientSecret "mock-secret"
-        
-        # Assert
         $result | Should -Not -BeNullOrEmpty
         $result.AccessToken | Should -Be "mock-access-token"
-        $result.TokenType | Should -Be "Bearer"
-        $result.ExpiresIn | Should -Be 3600
-        $result.ExpiresOn | Should -Not -BeNullOrEmpty
+        $result.TokenType   | Should -Be "Bearer"
+        $result.ExpiresIn   | Should -Be 3600
+        [datetime]::Parse($result.ExpiresOn.ToString()) | Should -BeGreaterThan (Get-Date)
     }
-    
-    It "Handles URL normalization correctly (removes trailing slash)" {
-        # Act
+
+    It "Normalizes trailing slash in Url for scope" {
         $null = Get-DataverseAuthToken -TenantId "mock-tenant-id" -Url "https://mock-org.crm.dynamics.com/" -ClientId "mock-client-id" -ClientSecret "mock-secret"
-        
-        # Assert
         Should -Invoke Invoke-RestMethod -ModuleName PipeDream -ParameterFilter {
             $Body.scope -eq "https://mock-org.crm.dynamics.com/.default"
         } -Times 1 -Exactly
     }
 
-    It "Calls Invoke-RestMethod with the correct parameters" {
-        # Act
+    It "Calls token endpoint with correct body" {
         $null = Get-DataverseAuthToken -TenantId "mock-tenant-id" -Url "https://mock-org.crm.dynamics.com" -ClientId "mock-client-id" -ClientSecret "mock-secret"
-          # Assert
         Should -Invoke Invoke-RestMethod -ModuleName PipeDream -ParameterFilter {
             $Uri -eq "https://login.microsoftonline.com/mock-tenant-id/oauth2/v2.0/token" -and
             $Method -eq "Post" -and

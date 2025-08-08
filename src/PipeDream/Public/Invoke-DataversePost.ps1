@@ -154,44 +154,29 @@ function Invoke-DataversePost {
         }
     }
     catch {
-        # Simple error handling - return the error as part of the response object
-        if ($_.Exception.Response) {
-            $statusCode = $_.Exception.Response.StatusCode.value__
-            
-            try {
-                # Try to get response content
-                $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
-                $reader.BaseStream.Position = 0
-                $reader.DiscardBufferedData()
-                $responseContent = $reader.ReadToEnd()
-                
-                # Try to parse as JSON
-                try {
-                    $content = $responseContent | ConvertFrom-Json
-                }
-                catch {
-                    $content = $responseContent
-                }
-                
-                return [PSCustomObject]@{
-                    StatusCode = $statusCode
-                    Content    = $content
-                    RawContent = $responseContent
-                    Error      = $_.Exception.Message
-                    Success    = $false
-                }
-            }
-            catch {
-                # If we can't get response content
-                return [PSCustomObject]@{
-                    StatusCode = $statusCode
-                    Error      = $_.Exception.Message
-                    Success    = $false
-                }
+        # Normalize HTTP vs non-HTTP errors without relying on specific exception types
+        $statusCode = $null
+        try { if ($_.Exception.Response) { $statusCode = $_.Exception.Response.StatusCode.value__ } } catch {}
+
+        # Get response content from ErrorDetails if available
+        $responseContent = ""
+        if ($_.ErrorDetails) {
+            $responseContent = $_.ErrorDetails.Message
+        }
+
+        if ($statusCode) {
+            # Try to parse as JSON
+            try { $content = $responseContent | ConvertFrom-Json } catch { $content = $responseContent }
+
+            return [PSCustomObject]@{
+                StatusCode = $statusCode
+                Content    = $content
+                RawContent = $responseContent
+                Error      = $_.Exception.Message
+                Success    = $false
             }
         }
         else {
-            # For non-HTTP errors
             return [PSCustomObject]@{
                 Error   = $_.Exception.Message
                 Success = $false
