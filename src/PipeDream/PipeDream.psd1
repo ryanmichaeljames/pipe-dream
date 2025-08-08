@@ -3,7 +3,7 @@
     RootModule = 'PipeDream.psm1'
     
     # Version number of this module.
-    ModuleVersion = '4.2.0'
+    ModuleVersion = '4.2.1'
     
     # ID used to uniquely identify this module
     GUID = '63075401-baaa-4011-b646-6bde9e6e1a8b'
