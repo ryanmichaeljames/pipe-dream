@@ -86,7 +86,13 @@ try {
   # Import the module from repo relative path
   $modulePath = Join-Path -Path $PSScriptRoot -ChildPath '..\src\PipeDream\PipeDream.psd1'
   if (-not (Test-Path $modulePath)) { throw "PipeDream module not found at $modulePath" }
+  # Ensure we aren't using a globally installed PipeDream; then import from repo
+  Remove-Module PipeDream -ErrorAction SilentlyContinue
   Import-Module $modulePath -Force -ErrorAction Stop
+  $loaded = Get-Module PipeDream
+  if ($loaded) {
+    Write-Host ("[Smoke] Using PipeDream module: {0} (v{1})" -f $loaded.Path, $loaded.Version) -ForegroundColor Yellow
+  }
   Write-Verbose "Imported module: $modulePath"
 
   # Acquire a valid token for HTTP error tests requiring auth
@@ -99,7 +105,7 @@ try {
   # 1) Unauthorized (401/403) with intentionally bad token
   Write-Note "Testing Unauthorized with invalid access token"
   $badAuth = Invoke-DataverseGet -AccessToken 'invalid.token.value' -Url $Url -Query (Get-EntityPath("/$($EntitySet)?`$top=1")) -Verbose:$VerbosePreference
-  $allPass = (Assert-ErrorResult -Label 'Unauthorized (bad token)' -Result $badAuth -ExpectedStatusCodes @(401,403)) -and $allPass
+  $allPass = (Assert-ErrorResult -Label 'Unauthorized (bad token)' -Result $badAuth -ExpectedStatusCodes @(401, 403)) -and $allPass
 
   # 2) NotFound (404) for a random GUID
   $randomGuid = [Guid]::NewGuid().Guid

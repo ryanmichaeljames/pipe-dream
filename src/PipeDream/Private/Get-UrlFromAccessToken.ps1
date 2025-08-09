@@ -16,9 +16,7 @@ function Get-UrlFromAccessToken {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string]$AccessToken
+        [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string] $AccessToken
     )
 
     try {
@@ -28,19 +26,19 @@ function Get-UrlFromAccessToken {
             Write-Verbose "Invalid token format. Expected JWT format with 3 parts."
             return $null
         }
-        
+
         # Add padding to avoid Base64 decode errors
         $payloadBase64 = $tokenParts[1].Replace('-', '+').Replace('_', '/')
         $padLength = 4 - ($payloadBase64.Length % 4)
         if ($padLength -lt 4) {
             $payloadBase64 = $payloadBase64 + ("=" * $padLength)
         }
-        
+
         # Decode the base64 payload to JSON
         $payloadBytes = [System.Convert]::FromBase64String($payloadBase64)
         $payloadJson = [System.Text.Encoding]::UTF8.GetString($payloadBytes)
         $tokenPayload = $payloadJson | ConvertFrom-Json
-        
+
         # Extract the audience claim
         if ($tokenPayload.aud) {
             Write-Verbose "Extracted URL from token: $($tokenPayload.aud)"

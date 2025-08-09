@@ -71,7 +71,13 @@ try {
   if (-not (Test-Path $modulePath)) {
     throw "PipeDream module not found at $modulePath"
   }
+  # Ensure we aren't using a globally installed PipeDream; then import from repo
+  Remove-Module PipeDream -ErrorAction SilentlyContinue
   Import-Module $modulePath -Force -ErrorAction Stop
+  $loaded = Get-Module PipeDream
+  if ($loaded) {
+    Write-Host ("[Smoke] Using PipeDream module: {0} (v{1})" -f $loaded.Path, $loaded.Version) -ForegroundColor Yellow
+  }
   Write-Verbose "Imported module: $modulePath"
 
   # 1) Auth
