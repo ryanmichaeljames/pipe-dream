@@ -62,7 +62,7 @@ function New-DataverseHeaders {
     # - Always sets Authorization + OData defaults
     # - Accept/Content-Type are optional (Content-Type typically set by caller/core when body exists)
     # - ExtraHeaders apply LAST and can override, except for a composed Prefer we build below
-    $headers = [System.Collections.Hashtable]::Synchronized(@{})
+    $headers = @{}
     $headers['Authorization'] = "Bearer $AccessToken"
     if ($Accept) { $headers['Accept'] = $Accept }
     if ($ContentType) { $headers['Content-Type'] = $ContentType }
