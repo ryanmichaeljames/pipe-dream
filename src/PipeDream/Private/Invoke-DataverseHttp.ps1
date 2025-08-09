@@ -139,7 +139,7 @@ function Invoke-DataverseHttp {
     catch {
         $statusCode = $null
         try {
-            if ($_.Exception.Response) { $statusCode = $_.Exception.Response.StatusCode.value__ }
+            if ($_.Exception.Response) { $statusCode = [int]$_.Exception.Response.StatusCode }
         }
         catch {
             Write-Verbose 'Invoke-DataverseHttp: Unable to read StatusCode from exception response.'
