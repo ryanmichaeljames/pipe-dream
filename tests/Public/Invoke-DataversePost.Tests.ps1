@@ -16,10 +16,10 @@ Describe "Invoke-DataversePost" {
     }
 
     It "Parses JSON content and returns success on 201" {
-    $AccessToken = 'tok'
-    $Url = 'https://org.crm.dynamics.com'
-    $Body = @{ name = 'Acme' }
-    $res = Invoke-DataversePost -AccessToken $AccessToken -Url $Url -Query '/api/data/v9.2/accounts' -Body $Body
+        $AccessToken = 'tok'
+        $Url = 'https://org.crm.dynamics.com'
+        $Body = @{ name = 'Acme' }
+        $res = Invoke-DataversePost -AccessToken $AccessToken -Url $Url -Query '/api/data/v9.2/accounts' -Body $Body
         $res.Success | Should -BeTrue
         $res.StatusCode | Should -Be 201
         $res.Content.name | Should -Be 'Acme'
@@ -27,10 +27,10 @@ Describe "Invoke-DataversePost" {
     }
 
     It "Merges custom headers (Prefer)" {
-    $AccessToken = 'tok'
-    $Url = 'https://org.crm.dynamics.com'
-    $Body = @{ name = 'Acme' }
-    $null = Invoke-DataversePost -AccessToken $AccessToken -Url $Url -Query '/api/data/v9.2/accounts' -Body $Body -Headers @{ Prefer = 'return=representation' }
+        $AccessToken = 'tok'
+        $Url = 'https://org.crm.dynamics.com'
+        $Body = @{ name = 'Acme' }
+        $null = Invoke-DataversePost -AccessToken $AccessToken -Url $Url -Query '/api/data/v9.2/accounts' -Body $Body -Headers @{ Prefer = 'return=representation' }
         Should -Invoke Invoke-WebRequest -ModuleName PipeDream -ParameterFilter {
             $Headers['Prefer'] -eq 'return=representation' -and $Headers['Authorization'] -like 'Bearer *'
         }
@@ -38,10 +38,10 @@ Describe "Invoke-DataversePost" {
 
     It "Returns structured error on failure" {
         Mock Invoke-WebRequest -ModuleName PipeDream { throw (New-Object System.Exception 'HTTP 400') }
-    $AccessToken = 'tok'
-    $Url = 'https://org.crm.dynamics.com'
-    $Body = @{ name = 'Acme' }
-    $res = Invoke-DataversePost -AccessToken $AccessToken -Url $Url -Query '/api/data/v9.2/accounts' -Body $Body
+        $AccessToken = 'tok'
+        $Url = 'https://org.crm.dynamics.com'
+        $Body = @{ name = 'Acme' }
+        $res = Invoke-DataversePost -AccessToken $AccessToken -Url $Url -Query '/api/data/v9.2/accounts' -Body $Body
         $res.Success | Should -BeFalse
         $res.Error | Should -Match 'HTTP 400'
     }

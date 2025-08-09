@@ -38,9 +38,9 @@ function New-DataverseHeaders {
     .OUTPUTS
         Hashtable
     #>
-    [CmdletBinding()] 
+    [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()] [string] $AccessToken,
+        [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string] $AccessToken,
         [string] $Accept = 'application/json',
         [string] $ContentType,
         [string] $ODataVersion = '4.0',
@@ -48,7 +48,7 @@ function New-DataverseHeaders {
         [switch] $PreferReturnRepresentation,
         [int] $PreferODataMaxPageSize,
         [string] $PreferIncludeAnnotations,
-        [ValidateSet('eventual')][string] $ConsistencyLevel,
+        [ValidateSet('eventual')] [string] $ConsistencyLevel,
         [string] $IfMatch,
         [string] $IfNoneMatch,
         [string] $CorrelationId,
@@ -63,11 +63,11 @@ function New-DataverseHeaders {
     # - Accept/Content-Type are optional (Content-Type typically set by caller/core when body exists)
     # - ExtraHeaders apply LAST and can override, except for a composed Prefer we build below
     $headers = [System.Collections.Hashtable]::Synchronized(@{})
-    $headers['Authorization']    = "Bearer $AccessToken"
-    if ($Accept)        { $headers['Accept'] = $Accept }
-    if ($ContentType)   { $headers['Content-Type'] = $ContentType }
-    if ($ODataVersion)  { $headers['OData-Version'] = $ODataVersion }
-    if ($ODataMaxVersion){ $headers['OData-MaxVersion'] = $ODataMaxVersion }
+    $headers['Authorization'] = "Bearer $AccessToken"
+    if ($Accept) { $headers['Accept'] = $Accept }
+    if ($ContentType) { $headers['Content-Type'] = $ContentType }
+    if ($ODataVersion) { $headers['OData-Version'] = $ODataVersion }
+    if ($ODataMaxVersion) { $headers['OData-MaxVersion'] = $ODataMaxVersion }
 
     # Compose Prefer
     # We support multiple Prefer parts; if the caller also provides a Prefer header via ExtraHeaders,
@@ -79,7 +79,7 @@ function New-DataverseHeaders {
     if ($PreferODataMaxPageSize) { $preferParts += "odata.maxpagesize=$PreferODataMaxPageSize" }
     if ($PreferIncludeAnnotations) { $preferParts += "odata.include-annotations=$PreferIncludeAnnotations" }
     if ($preferParts.Count -gt 0) {
-    # If ExtraHeaders already contains Prefer, append parts after a comma unless identical
+        # If ExtraHeaders already contains Prefer, append parts after a comma unless identical
         $existingPrefer = $null
         if ($ExtraHeaders -and $ExtraHeaders.ContainsKey('Prefer')) { $existingPrefer = [string]$ExtraHeaders['Prefer'] }
         if ($existingPrefer) {
@@ -92,11 +92,11 @@ function New-DataverseHeaders {
     }
 
     if ($ConsistencyLevel) { $headers['ConsistencyLevel'] = $ConsistencyLevel }
-    if ($IfMatch)          { $headers['If-Match'] = $IfMatch }
-    if ($IfNoneMatch)      { $headers['If-None-Match'] = $IfNoneMatch }
-    if ($CorrelationId)    { $headers['x-ms-client-request-id'] = $CorrelationId }
+    if ($IfMatch) { $headers['If-Match'] = $IfMatch }
+    if ($IfNoneMatch) { $headers['If-None-Match'] = $IfNoneMatch }
+    if ($CorrelationId) { $headers['x-ms-client-request-id'] = $CorrelationId }
     if ($SuppressDuplicateDetection.IsPresent) { $headers['MSCRM.SuppressDuplicateDetection'] = 'true' }
-    if ($AcceptLanguage)   { $headers['Accept-Language'] = $AcceptLanguage }
+    if ($AcceptLanguage) { $headers['Accept-Language'] = $AcceptLanguage }
 
     # Merge extra headers last to allow explicit override by caller
     # Special-case: if we already composed a Prefer header, we skip overwriting it so the

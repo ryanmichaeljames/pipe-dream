@@ -23,21 +23,21 @@ function Get-DataverseAuthToken {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$TenantId,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$Url,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ClientId,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ClientSecret
     )
     Write-Verbose "Starting Get-DataverseAuthToken for URL: $Url"
-    
+
     # Normalize URL (remove trailing slash if present)
     if ($Url.EndsWith("/")) {
         $Url = $Url.TrimEnd("/")
@@ -47,24 +47,24 @@ function Get-DataverseAuthToken {
         # Prepare token request - using v2 endpoint
         $tokenEndpoint = "https://login.microsoftonline.com/$TenantId/oauth2/v2.0/token"
         $scope = "https://$(([System.Uri]$Url).Host)/.default"
-        
+
         Write-Verbose "Requesting token from: $tokenEndpoint"
         Write-Verbose "Scope: $scope"
-        
+
         # Create body for token request
         $body = @{
             grant_type    = "client_credentials"
             client_id     = $ClientId
             client_secret = $ClientSecret
             scope         = $scope
-        }        
-        
+        }
+
         # Make the request
         $response = Invoke-RestMethod -Uri $tokenEndpoint -Method Post -Body $body -ContentType "application/x-www-form-urlencoded" -ErrorAction Stop
-        
+
         # Calculate the expiration time
         $tokenExpiresOn = (Get-Date).AddSeconds($response.expires_in)
-        
+
         # Format and return the token response as a custom object
         return [PSCustomObject]@{
             AccessToken = $response.access_token
@@ -82,22 +82,22 @@ function Get-DataverseAuthToken {
                 if ($_.ErrorDetails) {
                     $responseContent = $_.ErrorDetails.Message
                 }
-                
+
                 # Try to parse as JSON
                 $errorObject = $responseContent | ConvertFrom-Json
 
                 # Format a detailed error message
                 $detailedError = "Authentication Error Code: $($errorObject.error)`n"
                 $detailedError += "Description: $($errorObject.error_description)`n"
-                
+
                 if ($errorObject.correlation_id) {
                     $detailedError += "Correlation ID: $($errorObject.correlation_id)`n"
                 }
-                
+
                 if ($errorObject.trace_id) {
                     $detailedError += "Trace ID: $($errorObject.trace_id)`n"
                 }
-                
+
                 # Add specific guidance based on error type
                 switch -Regex ($errorObject.error) {
                     "invalid_scope" {
@@ -125,7 +125,7 @@ function Get-DataverseAuthToken {
                         $detailedError += "Guidance: Please review your authentication parameters and try again."
                     }
                 }
-                
+
                 Write-Error $detailedError
                 throw $detailedError
             }

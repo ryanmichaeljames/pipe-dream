@@ -24,8 +24,8 @@ function Invoke-DataversePatch {
             name = "Updated Account Name"
             telephone1 = "555-123-4567"
         }
-        $result = Invoke-DataversePatch -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)" -Body $body
-        
+    $result = Invoke-DataversePatch -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)" -Body $body
+
         # The result object will contain:
         # - StatusCode: HTTP status code of the response
         # - Headers: Response headers
@@ -37,18 +37,18 @@ function Invoke-DataversePatch {
         PATCH operations typically return 204 No Content on success with no response body.
     #>
     [CmdletBinding()]
-    param (        
+    param (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
 
         [Parameter(Mandatory = $false)]
         [string]$Url,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$Query,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNull()]
         [object]$Body,

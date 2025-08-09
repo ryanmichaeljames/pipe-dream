@@ -25,8 +25,8 @@ function Invoke-DataversePost {
             telephone1 = "555-123-4567"
             accountcategorycode = 1
         }
-        $result = Invoke-DataversePost -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts" -Body $body
-        
+    $result = Invoke-DataversePost -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts" -Body $body
+
         # The result object will contain:
         # - StatusCode: HTTP status code of the response
         # - Headers: Response headers including the OData-EntityId header with the URL of the created record
@@ -41,18 +41,18 @@ function Invoke-DataversePost {
         the URL of the newly created entity.
     #>
     [CmdletBinding()]
-    param (        
+    param (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
 
         [Parameter(Mandatory = $false)]
         [string]$Url,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$Query,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNull()]
         [object]$Body,

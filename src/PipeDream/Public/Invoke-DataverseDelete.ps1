@@ -16,8 +16,8 @@ function Invoke-DataverseDelete {
         Optional. Additional headers to include in the request.
     .EXAMPLE
         $authResult = Get-DataverseAuthToken -TenantId "00000000-0000-0000-0000-000000000000" -Url "https://myorg.crm.dynamics.com" -ClientId "00000000-0000-0000-0000-000000000000" -ClientSecret "mySecret"
-        $result = Invoke-DataverseDelete -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)"
-        
+    $result = Invoke-DataverseDelete -AccessToken $authResult.AccessToken -Url "https://myorg.crm.dynamics.com" -Query "/api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)"
+
         # The result object will contain:
         # - StatusCode: HTTP status code of the response
         # - Headers: Response headers (if available)
@@ -29,14 +29,14 @@ function Invoke-DataverseDelete {
         DELETE operations typically do not return content on success, only a status code of 204 No Content.
     #>
     [CmdletBinding()]
-    param (        
+    param (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
 
         [Parameter(Mandatory = $false)]
         [string]$Url,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$Query,

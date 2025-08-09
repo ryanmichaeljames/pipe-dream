@@ -9,7 +9,7 @@ Describe "Get-UrlFromAccessToken (private)" {
             $aud = 'https://org.crm.dynamics.com'
             $header = (@{ alg = 'none'; typ = 'JWT' } | ConvertTo-Json -Compress)
             $payload = (@{ aud = $aud } | ConvertTo-Json -Compress)
-            $toB64Url = { param($s) $b=[Text.Encoding]::UTF8.GetBytes($s); $x=[Convert]::ToBase64String($b); $x.TrimEnd('=') -replace '\\+', '-' -replace '/', '_' }
+            $toB64Url = { param($s) $b = [Text.Encoding]::UTF8.GetBytes($s); $x = [Convert]::ToBase64String($b); $x.TrimEnd('=') -replace '\\+', '-' -replace '/', '_' }
             $h = & $toB64Url $header
             $p = & $toB64Url $payload
             $token = "$h.$p.x"
@@ -22,7 +22,7 @@ Describe "Get-UrlFromAccessToken (private)" {
         $result = InModuleScope PipeDream {
             $header = (@{ alg = 'none'; typ = 'JWT' } | ConvertTo-Json -Compress)
             $payload = (@{ sub = 'user'; iss = 'issuer' } | ConvertTo-Json -Compress)
-            $toB64Url = { param($s) $b=[Text.Encoding]::UTF8.GetBytes($s); $x=[Convert]::ToBase64String($b); $x.TrimEnd('=') -replace '\\+', '-' -replace '/', '_' }
+            $toB64Url = { param($s) $b = [Text.Encoding]::UTF8.GetBytes($s); $x = [Convert]::ToBase64String($b); $x.TrimEnd('=') -replace '\\+', '-' -replace '/', '_' }
             $h = & $toB64Url $header
             $p = & $toB64Url $payload
             $token = "$h.$p.x"
