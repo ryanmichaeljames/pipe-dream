@@ -18,6 +18,10 @@ Describe "Invoke-DataverseGet" {
         $Url = 'https://org.crm.dynamics.com'
     }
 
+    It "Requires Url parameter (no derivation)" {
+        { Invoke-DataverseGet -AccessToken $AccessToken -Url '' -Query '/api/data/v9.2/WhoAmI' } | Should -Throw
+    }
+
     It "Builds full URL and returns parsed JSON content on success" {
         $res = Invoke-DataverseGet -AccessToken $AccessToken -Url $Url -Query '/api/data/v9.2/accounts?$top=1'
         $res.Success | Should -BeTrue

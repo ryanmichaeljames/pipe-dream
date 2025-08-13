@@ -6,9 +6,9 @@ function Invoke-DataverseDelete {
         The Invoke-DataverseDelete function makes a DELETE request to the Dataverse API using a provided
         authentication token and returns the complete HTTP response including status code, headers and content.
     .PARAMETER AccessToken
-        The authentication token string (access token) obtained from Get-DataverseAuthToken.    .PARAMETER Url
-        Optional. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
-        If not provided, the function will try to extract it from the AccessToken.
+        The authentication token string (access token) obtained from Get-DataverseAuthToken.
+    .PARAMETER Url
+        Required. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
     .PARAMETER Query
         The OData query to append to the base URL. Should start with a forward slash.
         For example: /api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)
@@ -34,7 +34,8 @@ function Invoke-DataverseDelete {
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Url,
 
         [Parameter(Mandatory = $true)]

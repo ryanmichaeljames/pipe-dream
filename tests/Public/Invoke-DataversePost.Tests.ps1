@@ -15,6 +15,12 @@ Describe "Invoke-DataversePost" {
         }
     }
 
+    It "Requires Url parameter (no derivation)" {
+        $AccessToken = 'tok'
+        $Body = @{ name = 'Acme' }
+        { Invoke-DataversePost -AccessToken $AccessToken -Url '' -Query '/api/data/v9.2/accounts' -Body $Body } | Should -Throw
+    }
+
     It "Parses JSON content and returns success on 201" {
         $AccessToken = 'tok'
         $Url = 'https://org.crm.dynamics.com'

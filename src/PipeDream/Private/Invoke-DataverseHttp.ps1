@@ -3,14 +3,15 @@ function Invoke-DataverseHttp {
     .SYNOPSIS
         Core HTTP executor for Dataverse requests.
     .DESCRIPTION
-    Centralizes URL normalization, header building, request execution, and structured output.
+        Centralizes URL normalization, header building, request execution, and structured output.
         Does not throw for normal HTTP errors; returns a structured result contract.
+        AI-Context: This is the single source for HTTP calls. Keep inputs explicit and outputs structured for easy composition.
     .PARAMETER Method
         HTTP method: GET, POST, PATCH, DELETE.
     .PARAMETER AccessToken
         OAuth access token string.
     .PARAMETER Url
-        Base environment URL. If not supplied, will try to derive from token 'aud' via Get-UrlFromAccessToken.
+        Base environment URL. Required; not derived from token.
     .PARAMETER Query
         Path/query beginning with '/'. Will be normalized.
     .PARAMETER Body
@@ -26,29 +27,12 @@ function Invoke-DataverseHttp {
     param(
         [Parameter(Mandatory = $true)][ValidateSet('GET', 'POST', 'PATCH', 'DELETE')][string] $Method,
         [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string] $AccessToken,
-        [string] $Url,
+        [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string] $Url,
         [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string] $Query,
         [object] $Body,
         [hashtable] $Headers,
         [int] $TimeoutSec
     )
-
-    # Derive URL if needed
-    # If Url isn't provided, we pull 'aud' from the access token payload via Get-UrlFromAccessToken.
-    # This preserves the existing public behavior where Url was optional when the token audience matched the env URL.
-    if ([string]::IsNullOrEmpty($Url)) {
-        $extractedUrl = Get-UrlFromAccessToken -AccessToken $AccessToken
-        if ($extractedUrl) {
-            $Url = $extractedUrl
-        }
-        else {
-            throw "Could not extract URL from the access token."
-        }
-    }
-
-    if ([string]::IsNullOrEmpty($Url)) {
-        throw "URL is required. Either provide it as a parameter or use an access token that contains an 'aud' claim."
-    }
 
     # Normalize URL and Query
     # - Trim trailing slash from Url
@@ -80,9 +64,16 @@ function Invoke-DataverseHttp {
     $builtHeaders = New-DataverseHeaders -AccessToken $AccessToken -ContentType $contentType -ExtraHeaders $Headers
 
     # Serialize body when present
-    $jsonBody = $null
+    # Per contract: if object and Content-Type not set, ConvertTo-Json -Depth 10; otherwise pass through as-is.
+    $bodyToSend = $null
     if ($null -ne $Body) {
-        $jsonBody = $Body | ConvertTo-Json -Depth 20 -Compress
+        $hasContentType = ($Headers -and $Headers.ContainsKey('Content-Type'))
+        if (-not $hasContentType -and ($Body -isnot [string])) {
+            $bodyToSend = $Body | ConvertTo-Json -Depth 10 -Compress
+        }
+        else {
+            $bodyToSend = $Body
+        }
     }
 
     # Prepare Invoke-WebRequest splat
@@ -90,8 +81,8 @@ function Invoke-DataverseHttp {
     $splat = @{
         Uri = $requestUrl; Method = $Method; Headers = $builtHeaders; ErrorAction = 'Stop'
     }
-    if ($jsonBody) {
-        $splat['Body'] = $jsonBody
+    if ($bodyToSend -ne $null) {
+        $splat['Body'] = $bodyToSend
     }
     if ($TimeoutSec -gt 0) {
         $splat['TimeoutSec'] = $TimeoutSec

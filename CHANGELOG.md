@@ -3,6 +3,7 @@
 ## v4.3.0-alpha
 - Refactor HTTP logic and add private helpers for Dataverse
 - Improve error handling in Dataverse functions
+- BREAKING: Url is now required for all Dataverse HTTP commands; token-based URL derivation from the access token 'aud' claim has been removed.
 
 ## v4.2.1
 - Improved error handling

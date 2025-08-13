@@ -5,6 +5,7 @@ function New-DataverseHeaders {
     .DESCRIPTION
         Produces a case-insensitive hashtable of HTTP headers for Dataverse, including auth and OData defaults.
         Allows composing Prefer directives, conditional headers, correlation IDs, and localization.
+        AI-Context: Keep defaults predictable (Authorization, Accept, OData). Avoid logging secrets.
     .PARAMETER AccessToken
         OAuth access token (raw JWT string). Required for Authorization header.
     .PARAMETER Accept

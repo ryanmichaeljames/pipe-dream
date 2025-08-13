@@ -7,9 +7,9 @@ function Invoke-DataversePatch {
         authentication token and returns the complete HTTP response including status code, headers and content.
         PATCH is used for updating existing records in Dataverse.
     .PARAMETER AccessToken
-        The authentication token string (access token) obtained from Get-DataverseAuthToken.    .PARAMETER Url
-        Optional. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
-        If not provided, the function will try to extract it from the AccessToken.
+        The authentication token string (access token) obtained from Get-DataverseAuthToken.
+    .PARAMETER Url
+        Required. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
     .PARAMETER Query
         The OData query to append to the base URL. Should start with a forward slash.
         For example: /api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)
@@ -42,7 +42,8 @@ function Invoke-DataversePatch {
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Url,
 
         [Parameter(Mandatory = $true)]

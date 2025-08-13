@@ -14,6 +14,10 @@ Describe "Invoke-DataverseHttp (private)" {
         }
     }
 
+    It "Throws when Url is empty (parameter validation)" {
+        { InModuleScope PipeDream { Invoke-DataverseHttp -Method GET -AccessToken 'tok' -Url '' -Query '/x' } } | Should -Throw
+    }
+
     It "Normalizes URL and query and returns output shape" {
         $res = InModuleScope PipeDream {
             Invoke-DataverseHttp -Method GET -AccessToken 'tok' -Url 'https://org.crm.dynamics.com/' -Query 'api/data/v9.2/WhoAmI'
@@ -30,5 +34,12 @@ Describe "Invoke-DataverseHttp (private)" {
             Invoke-DataverseHttp -Method POST -AccessToken 'tok' -Url 'https://org.crm.dynamics.com' -Query '/api/data/v9.2/accounts' -Body @{ name = 'x' }
         }
         Should -Invoke Invoke-WebRequest -ModuleName PipeDream -ParameterFilter { $Headers['Content-Type'] -eq 'application/json' -and $Method -eq 'POST' }
+    }
+
+    It "Passes body through when Content-Type is provided by caller" {
+        $null = InModuleScope PipeDream {
+            Invoke-DataverseHttp -Method POST -AccessToken 'tok' -Url 'https://org.crm.dynamics.com' -Query '/api/data/v9.2/accounts' -Body '{"name":"x"}' -Headers @{ 'Content-Type' = 'application/json' }
+        }
+        Should -Invoke Invoke-WebRequest -ModuleName PipeDream -ParameterFilter { $Headers['Content-Type'] -eq 'application/json' -and $Body -eq '{"name":"x"}' }
     }
 }

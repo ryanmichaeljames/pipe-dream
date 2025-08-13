@@ -15,6 +15,12 @@ Describe "Invoke-DataversePatch" {
         }
     }
 
+    It "Requires Url parameter (no derivation)" {
+        $AccessToken = 'tok'
+        $Body = @{ name = 'x' }
+        { Invoke-DataversePatch -AccessToken $AccessToken -Url '' -Query '/api/data/v9.2/accounts(11111111-1111-1111-1111-111111111111)' -Body $Body } | Should -Throw
+    }
+
     It "Returns success on 204 No Content" {
         $AccessToken = 'tok'
         $Url = 'https://org.crm.dynamics.com'
