@@ -16,7 +16,7 @@
   Azure AD tenant ID (GUID).
 
 .PARAMETER Url
-  Dataverse environment URL (e.g., https://contoso.crm.dynamics.com).
+  Dataverse environment URL (e.g., https://yourorg.crm.dynamics.com).
 
 .PARAMETER ClientId
   App registration Client ID.
@@ -37,8 +37,8 @@
   $ClientId = "00000000-0000-0000-0000-000000000000"
   $ClientSecret = "<secret>"
   ./Smoke-Dataverse-CRUD.ps1 -TenantId $TenantId -Url $Url -ClientId $ClientId -ClientSecret $ClientSecret -Verbose
-
 #>
+
 [CmdletBinding()]
 param(
   [Parameter(Mandatory)]

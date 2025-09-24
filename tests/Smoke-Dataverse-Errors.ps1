@@ -11,7 +11,7 @@
   Azure AD tenant ID (GUID).
 
 .PARAMETER Url
-  Dataverse environment URL (e.g., https://contoso.crm.dynamics.com).
+  Dataverse environment URL (e.g., https://yourorg.crm.dynamics.com).
 
 .PARAMETER ClientId
   App registration Client ID.
@@ -19,21 +19,16 @@
 .PARAMETER ClientSecret
   App registration Client Secret value.
 
-.PARAMETER EntitySet
-  Dataverse entity set name (plural). Defaults to 'accounts'.
-
-
-
 .EXAMPLE
   ./Smoke-Dataverse-Errors.ps1 -TenantId $TenantId -Url $Url -ClientId $ClientId -ClientSecret $ClientSecret -Verbose
 #>
+
 [CmdletBinding()]
 param(
   [Parameter(Mandatory)] [string]$TenantId,
   [Parameter(Mandatory)] [string]$Url,
   [Parameter(Mandatory)] [string]$ClientId,
-  [Parameter(Mandatory)] [string]$ClientSecret,
-  [Parameter()] [string]$EntitySet = 'accounts'
+  [Parameter(Mandatory)] [string]$ClientSecret
 )
 
 Set-StrictMode -Version Latest
@@ -104,30 +99,30 @@ try {
 
   # 1) Unauthorized (401/403) with intentionally bad token
   Write-Note "Testing Unauthorized with invalid access token"
-  $badAuth = Invoke-DataverseGet -AccessToken 'invalid.token.value' -Url $Url -Query (Get-EntityPath("/$($EntitySet)?`$top=1")) -Verbose:$VerbosePreference
+  $badAuth = Invoke-DataverseGet -AccessToken 'invalid.token.value' -Url $Url -Query (Get-EntityPath("/accounts?`$top=1")) -Verbose:$VerbosePreference
   $allPass = (Assert-ErrorResult -Label 'Unauthorized (bad token)' -Result $badAuth -ExpectedStatusCodes @(401, 403)) -and $allPass
 
   # 2) NotFound (404) for a random GUID
   $randomGuid = [Guid]::NewGuid().Guid
   Write-Note "Testing NotFound with random id $randomGuid"
-  $notFound = Invoke-DataverseGet -AccessToken $token.AccessToken -Url $Url -Query (Get-EntityPath("/$($EntitySet)($randomGuid)?`$select=name")) -Verbose:$VerbosePreference
+  $notFound = Invoke-DataverseGet -AccessToken $token.AccessToken -Url $Url -Query (Get-EntityPath("/accounts($randomGuid)?`$select=name")) -Verbose:$VerbosePreference
   $allPass = (Assert-ErrorResult -Label 'NotFound (random id)' -Result $notFound -ExpectedStatusCodes @(404)) -and $allPass
 
   # 3) BadRequest (400) invalid select property
   Write-Note 'Testing BadRequest with invalid $select property'
-  $badRequest = Invoke-DataverseGet -AccessToken $token.AccessToken -Url $Url -Query (Get-EntityPath("/$($EntitySet)?`$select=thisfielddoesnotexist")) -Verbose:$VerbosePreference
+  $badRequest = Invoke-DataverseGet -AccessToken $token.AccessToken -Url $Url -Query (Get-EntityPath("/accounts?`$select=thisfielddoesnotexist")) -Verbose:$VerbosePreference
   $allPass = (Assert-ErrorResult -Label 'BadRequest (invalid $select)' -Result $badRequest -ExpectedStatusCodes @(400)) -and $allPass
 
   # 4) BadRequest (400) invalid property on POST
   Write-Note "Testing BadRequest on POST with invalid field"
   $postBody = @{ thisfielddoesnotexist = 'x' }
-  $postBad = Invoke-DataversePost -AccessToken $token.AccessToken -Url $Url -Query (Get-EntityPath("/$EntitySet")) -Body $postBody -Verbose:$VerbosePreference
+  $postBad = Invoke-DataversePost -AccessToken $token.AccessToken -Url $Url -Query (Get-EntityPath("/accounts")) -Body $postBody -Verbose:$VerbosePreference
   $allPass = (Assert-ErrorResult -Label 'BadRequest (POST invalid field)' -Result $postBad -ExpectedStatusCodes @(400)) -and $allPass
 
   # 5) Non-HTTP network error (invalid host) - mandatory
   Write-Note "Testing non-HTTP network error (invalid host)"
   $invalidHostUrl = 'https://nonexistent-host-for-pd-tests.invalid'
-  $netErr = Invoke-DataverseGet -AccessToken $token.AccessToken -Url $invalidHostUrl -Query (Get-EntityPath("/$($EntitySet)?`$top=1")) -Verbose:$VerbosePreference
+  $netErr = Invoke-DataverseGet -AccessToken $token.AccessToken -Url $invalidHostUrl -Query (Get-EntityPath("/accounts?`$top=1")) -Verbose:$VerbosePreference
   $allPass = (Assert-ErrorResult -Label 'Network error (no HTTP response)' -Result $netErr -ExpectedStatusCodes @()) -and $allPass
 
   # Throttling test removed by request.

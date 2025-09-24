@@ -18,6 +18,7 @@ function Get-DataverseAuthToken {
     .NOTES
         This function returns a formatted token object with AccessToken, TokenType, ExpiresIn, and ExpiresOn properties.
     #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
@@ -36,6 +37,7 @@ function Get-DataverseAuthToken {
         [ValidateNotNullOrEmpty()]
         [string]$ClientSecret
     )
+    
     Write-Verbose "Starting Get-DataverseAuthToken for URL: $Url"
 
     # Normalize URL (remove trailing slash if present)

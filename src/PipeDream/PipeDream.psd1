@@ -54,13 +54,13 @@
             ProjectUri = 'https://github.com/ryanmichaeljames/pipe-dream'
             
             # A URL to an icon representing this module.
-            IconUri = 'https://www.ryanjames.dev/assets/img/pipe-dream-logo.png'
+            IconUri = 'https://raw.githubusercontent.com/ryanmichaeljames/pipe-dream/refs/heads/main/assets/logo_powershell_gallery.png'
             
             # ReleaseNotes of this module
             ReleaseNotes = 'https://github.com/ryanmichaeljames/pipe-dream/blob/main/CHANGELOG.md'
 
             # Prerelease label
-            Prerelease = 'alpha'
+            # Prerelease = 'alpha'
         }
     }
 }

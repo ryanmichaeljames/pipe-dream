@@ -15,6 +15,11 @@ Describe "Invoke-DataverseDelete" {
         }
     }
 
+    It "Requires Url parameter (no derivation)" {
+        $AccessToken = 'tok'
+        { Invoke-DataverseDelete -AccessToken $AccessToken -Url '' -Query '/api/data/v9.2/accounts(11111111-1111-1111-1111-111111111111)' } | Should -Throw
+    }
+
     It "Returns success on 204 No Content" {
         $AccessToken = 'tok'
         $Url = 'https://org.crm.dynamics.com'
