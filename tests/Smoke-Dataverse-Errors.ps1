@@ -99,6 +99,8 @@ try {
 
   # 1) Unauthorized (401/403) with intentionally bad token
   Write-Note "Testing Unauthorized with invalid access token"
+  # "accounts" is used here as it is a standard entity present in all Dataverse environments,
+  # ensuring this error scenario works reliably across tenants.
   $badAuth = Invoke-DataverseGet -AccessToken 'invalid.token.value' -Url $Url -Query (Get-EntityPath("/accounts?`$top=1")) -Verbose:$VerbosePreference
   $allPass = (Assert-ErrorResult -Label 'Unauthorized (bad token)' -Result $badAuth -ExpectedStatusCodes @(401, 403)) -and $allPass
 
