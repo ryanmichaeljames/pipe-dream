@@ -69,7 +69,7 @@ function Invoke-DataverseHttp {
     if ($null -ne $Body) {
         $hasContentType = ($Headers -and $Headers.ContainsKey('Content-Type'))
         if (-not $hasContentType -and ($Body -isnot [string])) {
-            $bodyToSend = $Body | ConvertTo-Json -Depth 10 -Compress
+            $bodyToSend = $Body | ConvertTo-Json -Depth 20 -Compress
         }
         else {
             $bodyToSend = $Body
