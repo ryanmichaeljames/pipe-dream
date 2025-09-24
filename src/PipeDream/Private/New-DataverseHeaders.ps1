@@ -38,6 +38,7 @@ function New-DataverseHeaders {
     .OUTPUTS
         Hashtable
     #>
+
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string] $AccessToken,

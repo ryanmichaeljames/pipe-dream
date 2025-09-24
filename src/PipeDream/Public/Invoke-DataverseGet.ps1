@@ -6,13 +6,11 @@ function Invoke-DataverseGet {
         The Invoke-DataverseGet function makes a GET request to the Dataverse API using a provided
         authentication token and returns the complete HTTP response including status code, headers and content.
 
-        If the Url parameter is not provided, the function will attempt to extract the audience (aud) claim
-        from the access token and use it as the URL.
+    Url is required; it is no longer derived from the access token.
     .PARAMETER AccessToken
         The authentication token string (access token) obtained from Get-DataverseAuthToken.
     .PARAMETER Url
-        Optional. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
-        If not provided, the function will try to extract it from the AccessToken.
+    Required. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
     .PARAMETER Query
         The OData query to append to the base URL. Should start with a forward slash.
         For example: /api/data/v9.2/accounts
@@ -36,13 +34,15 @@ function Invoke-DataverseGet {
         This function accepts an access token directly. Token expiration must be handled by the caller.
         The function returns the complete HTTP response with simple error handling.
     #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Url,
 
         [Parameter(Mandatory = $true)]
@@ -55,8 +55,9 @@ function Invoke-DataverseGet {
         [Parameter(Mandatory = $false)]
         [int]$TimeoutSec
     )
+    
     Write-Verbose "Starting Invoke-DataverseGet for URL: $Url"
-    # Delegate to the HTTP core which handles URL/query normalization, headers, and result shape.
-    $res = Invoke-DataverseHttp -Method GET -AccessToken $AccessToken -Url $Url -Query $Query -Headers $Headers -TimeoutSec $TimeoutSec
-    return $res
+
+    $response = Invoke-DataverseHttp -Method GET -AccessToken $AccessToken -Url $Url -Query $Query -Headers $Headers -TimeoutSec $TimeoutSec
+    return $response
 }

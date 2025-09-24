@@ -7,9 +7,9 @@ function Invoke-DataversePatch {
         authentication token and returns the complete HTTP response including status code, headers and content.
         PATCH is used for updating existing records in Dataverse.
     .PARAMETER AccessToken
-        The authentication token string (access token) obtained from Get-DataverseAuthToken.    .PARAMETER Url
-        Optional. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
-        If not provided, the function will try to extract it from the AccessToken.
+        The authentication token string (access token) obtained from Get-DataverseAuthToken.
+    .PARAMETER Url
+        Required. The base URL of the Power Platform environment. For example: https://myorg.crm.dynamics.com
     .PARAMETER Query
         The OData query to append to the base URL. Should start with a forward slash.
         For example: /api/data/v9.2/accounts(00000000-0000-0000-0000-000000000000)
@@ -36,13 +36,15 @@ function Invoke-DataversePatch {
         The function returns the complete HTTP response with simple error handling.
         PATCH operations typically return 204 No Content on success with no response body.
     #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AccessToken,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Url,
 
         [Parameter(Mandatory = $true)]
@@ -59,8 +61,9 @@ function Invoke-DataversePatch {
         [Parameter(Mandatory = $false)]
         [int]$TimeoutSec
     )
+
     Write-Verbose "Starting Invoke-DataversePatch for URL: $Url"
-    # Delegate to the HTTP core; PATCH typically returns 204 No Content on success.
-    $res = Invoke-DataverseHttp -Method PATCH -AccessToken $AccessToken -Url $Url -Query $Query -Body $Body -Headers $Headers -TimeoutSec $TimeoutSec
-    return $res
+    
+    $response = Invoke-DataverseHttp -Method PATCH -AccessToken $AccessToken -Url $Url -Query $Query -Body $Body -Headers $Headers -TimeoutSec $TimeoutSec
+    return $response
 }
